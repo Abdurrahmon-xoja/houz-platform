@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="uz">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login | Ho.uz</title>
+    <link rel="stylesheet" href="css/style.css?v=2.5">
+</head>
+
+<body>
+
+    <div class="login-page">
+        <div class="login-card">
+            <div class="login-logo">
+                <img src="img/platform_logo.svg" alt="Ho.uz" class="logo-img" style="max-height: 40px;">
+            </div>
+            <div class="login-subtitle">Admin paneliga kirish</div>
+
+            <form id="loginForm" novalidate>
+                <div class="form-field">
+                    <label for="username">Foydalanuvchi nomi</label>
+                    <input type="text" id="username" name="username" autocomplete="username" placeholder="admin"
+                        required>
+                </div>
+
+                <div class="form-field">
+                    <label for="password">Parol</label>
+                    <input type="password" id="password" name="password" autocomplete="current-password"
+                        placeholder="••••••••" required>
+                </div>
+
+                <button type="submit" class="btn-login" id="loginBtn">Kirish</button>
+
+                <div class="login-error" id="loginError">
+                    ❌ Login yoki parol noto'g'ri. Qayta urinib ko'ring.
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+
+</html>
