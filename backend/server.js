@@ -241,7 +241,13 @@ app.get('/api/subcategories', async (req, res) => {
         const { categoryId } = req.query;
         const whereClause = categoryId ? { CategoryId: categoryId } : {};
         
-        const subcategories = await SubCategory.findAll({ where: whereClause });
+        const subcategories = await SubCategory.findAll({ 
+            where: whereClause,
+            order: [
+                ['order', 'ASC'],
+                ['name', 'ASC']
+            ]
+        });
         res.json({ success: true, data: subcategories });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });
@@ -253,6 +259,25 @@ app.post('/api/subcategories', authMiddleware, async (req, res) => {
     try {
         const subCat = await SubCategory.create(req.body);
         res.json({ success: true, data: subCat });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+});
+
+// Reorder SubCategories (Protected)
+app.put('/api/subcategories/reorder', authMiddleware, async (req, res) => {
+    try {
+        const { items } = req.body; // Expects [{ id: 1, order: 0 }, { id: 2, order: 1 }]
+        if (!Array.isArray(items)) {
+            return res.status(400).json({ success: false, message: 'Invalid payload expected array of items' });
+        }
+        
+        // Use a transaction or simple loops
+        for (const item of items) {
+            await SubCategory.update({ order: item.order }, { where: { id: item.id } });
+        }
+        
+        res.json({ success: true, message: 'Reordered successfully' });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });
     }

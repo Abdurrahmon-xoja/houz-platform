@@ -705,16 +705,21 @@ function renderAdminCategories() {
         const icon = cat.icon || '📁'; // In our public UI we had SVG data, but for admin a simple emoji fallback is fine.
 
         return `
-        <div class="admin-cat-card" onclick="showAdminShopsView(${cat.id}, '${escHtml(nameRu)}')">
-            <div class="admin-cat-info">
-                <div class="admin-cat-icon">${icon}</div>
-                <div class="admin-cat-text">
-                    <h3>${escHtml(nameRu)}</h3>
-                    <p>${count} магазинов</p>
+        <div class="admin-cat-card" style="display: flex; flex-direction: column;">
+            <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;" onclick="showAdminShopsView(${cat.id}, '${escHtml(nameRu)}')">
+                <div class="admin-cat-info" style="flex: 1;">
+                    <div class="admin-cat-icon">${icon}</div>
+                    <div class="admin-cat-text">
+                        <h3 style="margin:0">${escHtml(nameRu)}</h3>
+                        <p style="margin: 4px 0 0 0;">${count} магазинов</p>
+                    </div>
+                </div>
+                <div class="admin-cat-chevron">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
                 </div>
             </div>
-            <div class="admin-cat-chevron">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end;">
+                 <button type="button" class="btn-edit" onclick="event.stopPropagation(); window.showFiltersView(${cat.id}, '${escHtml(nameRu)}')" style="font-size: 13px; padding: 6px 12px;">Filtrlarni Boshqarish</button>
             </div>
         </div>
         `;
@@ -726,7 +731,10 @@ let _currentAdminCategoryId = null;
 window.showAdminCategoryView = () => {
     _currentAdminCategoryId = null;
     document.getElementById('adminShopsView').style.display = 'none';
+    const filtersView = document.getElementById('adminFiltersView');
+    if(filtersView) filtersView.style.display = 'none';
     document.getElementById('adminCategoryView').style.display = 'block';
+    
     // Refresh counts in case a shop was added/deleted
     renderAdminCategories();
 };
@@ -734,6 +742,8 @@ window.showAdminCategoryView = () => {
 window.showAdminShopsView = (categoryId, categoryName) => {
     _currentAdminCategoryId = categoryId;
     document.getElementById('adminCategoryView').style.display = 'none';
+    const filtersView = document.getElementById('adminFiltersView');
+    if(filtersView) filtersView.style.display = 'none';
     
     const shopsView = document.getElementById('adminShopsView');
     shopsView.style.display = 'block';

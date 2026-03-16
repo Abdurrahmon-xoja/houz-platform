@@ -52,6 +52,10 @@ const SubCategory = sequelize.define('SubCategory', {
     slug: {
         type: DataTypes.STRING,
         allowNull: false
+    },
+    order: {
+        type: DataTypes.INTEGER,
+        defaultValue: 0
     }
 });
 
@@ -165,6 +169,10 @@ const initDb = async () => {
 
         try {
             await sequelize.query("ALTER TABLE Shops ADD COLUMN customLinks TEXT;");
+        } catch (e) { /* Column likely exists */ }
+
+        try {
+            await sequelize.query("ALTER TABLE SubCategories ADD COLUMN \"order\" INTEGER DEFAULT 0;");
         } catch (e) { /* Column likely exists */ }
 
         await sequelize.query('PRAGMA foreign_keys = true;');
