@@ -170,28 +170,22 @@ const initDb = async () => {
         console.log('Connection has been established successfully.');
         
         // Sync models with database
-        // alter: true updates existing tables to match the models
-        await sequelize.query('PRAGMA foreign_keys = false;');
-        await sequelize.sync(); 
+        if (sequelize.getDialect() === 'sqlite') {
+            // SQLite has bugs with alter: true on Many-to-Many tables, so we do it manually
+            await sequelize.query('PRAGMA foreign_keys = false;');
+            await sequelize.sync(); 
+            
+            try { await sequelize.query("ALTER TABLE Shops ADD COLUMN socialPlatform VARCHAR(255);"); } catch (e) {}
+            try { await sequelize.query("ALTER TABLE Shops ADD COLUMN socialUrl VARCHAR(255);"); } catch (e) {}
+            try { await sequelize.query("ALTER TABLE Shops ADD COLUMN customLinks TEXT;"); } catch (e) {}
+            try { await sequelize.query("ALTER TABLE SubCategories ADD COLUMN \"order\" INTEGER DEFAULT 0;"); } catch (e) {}
+
+            await sequelize.query('PRAGMA foreign_keys = true;');
+        } else {
+            // PostgreSQL handles alter: true safely and natively
+            await sequelize.sync({ alter: true });
+        }
         
-        // Safely add new columns since SQLite alter: true is buggy with many-to-many tables
-        try {
-            await sequelize.query("ALTER TABLE Shops ADD COLUMN socialPlatform VARCHAR(255);");
-        } catch (e) { /* Column likely exists */ }
-        
-        try {
-            await sequelize.query("ALTER TABLE Shops ADD COLUMN socialUrl VARCHAR(255);");
-        } catch (e) { /* Column likely exists */ }
-
-        try {
-            await sequelize.query("ALTER TABLE Shops ADD COLUMN customLinks TEXT;");
-        } catch (e) { /* Column likely exists */ }
-
-        try {
-            await sequelize.query("ALTER TABLE SubCategories ADD COLUMN \"order\" INTEGER DEFAULT 0;");
-        } catch (e) { /* Column likely exists */ }
-
-        await sequelize.query('PRAGMA foreign_keys = true;');
         console.log('Database synced.');
         
         // Create default admin if not exists
