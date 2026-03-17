@@ -1,13 +1,29 @@
+require('dotenv').config();
 const { Sequelize, DataTypes } = require('sequelize');
 const path = require('path');
 const bcrypt = require('bcryptjs');
 
-// Initialize Sequelize with SQLite
-const sequelize = new Sequelize({
-    dialect: 'sqlite',
-    storage: path.join(__dirname, 'database.sqlite'),
-    logging: false // Set to true to see SQL queries in console
-});
+let sequelize;
+if (process.env.DATABASE_URL) {
+    // Production (Render) with PostgreSQL
+    sequelize = new Sequelize(process.env.DATABASE_URL, {
+        dialect: 'postgres',
+        dialectOptions: {
+            ssl: {
+                require: true,
+                rejectUnauthorized: false
+            }
+        },
+        logging: false
+    });
+} else {
+    // Local Development with SQLite
+    sequelize = new Sequelize({
+        dialect: 'sqlite',
+        storage: path.join(__dirname, 'database.sqlite'),
+        logging: false
+    });
+}
 
 // Models
 

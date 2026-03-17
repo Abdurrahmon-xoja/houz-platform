@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
@@ -15,28 +16,17 @@ const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret-key-change-in-prod';
 
 // Middleware
 app.use(cors());
-app.use(bodyParser.json());
+// Increase body parser limits for large Base64 payloads
+app.use(bodyParser.json({ limit: '10mb' }));
+app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
 app.use(express.static(path.join(__dirname, '../frontend'))); // Serve static files from 'frontend' directory
 
-// Ensure upload directory exists
-const uploadDir = path.join(__dirname, '../frontend/img');
-if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir, { recursive: true });
-}
-
-// Multer Setup
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, uploadDir);
-    },
-    filename: (req, file, cb) => {
-        // Sanitize filename and append unique suffix
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        const ext = path.extname(file.originalname);
-        cb(null, file.fieldname + '-' + uniqueSuffix + ext);
-    }
+// Multer Setup (Memory Storage for Base64 Conversion)
+const storage = multer.memoryStorage();
+const upload = multer({ 
+    storage: storage,
+    limits: { fileSize: 2 * 1024 * 1024 } // 2MB limit
 });
-const upload = multer({ storage: storage });
 
 // Database Initialization
 initDb();
@@ -90,8 +80,15 @@ app.post('/api/upload', authMiddleware, upload.single('image'), (req, res) => {
     if (!req.file) {
         return res.status(400).json({ success: false, message: 'No file uploaded' });
     }
-    // Return path relative to frontend root (e.g., /img/filename.jpg)
-    res.json({ success: true, data: { url: `/img/${req.file.filename}` } });
+    
+    // Convert Buffer to Base64 String
+    const b64 = Buffer.from(req.file.buffer).toString('base64');
+    let mimeType = req.file.mimetype;
+    
+    // Construct the Data URI
+    const dataURI = `data:${mimeType};base64,${b64}`;
+    
+    res.json({ success: true, data: { url: dataURI } });
 });
 
 // --- Shops CRUD ---
