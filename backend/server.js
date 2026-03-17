@@ -104,7 +104,8 @@ app.get('/api/shops', async (req, res) => {
         ];
 
         if (search) {
-            whereClause.name = { [Op.like]: `%${search}%` };
+            // Use iLike for Postgres compatibility (case-insensitive)
+            whereClause.name = { [Op.iLike]: `%${search}%` };
         }
 
         if (category) {
