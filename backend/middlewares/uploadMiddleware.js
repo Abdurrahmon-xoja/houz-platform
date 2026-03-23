@@ -1,0 +1,10 @@
+const multer = require('multer');
+
+// Multer Setup (Memory Storage for Base64 Conversion)
+const storage = multer.memoryStorage();
+const upload = multer({ 
+    storage: storage,
+    limits: { fileSize: 2 * 1024 * 1024 } // 2MB limit
+});
+
+module.exports = upload;
