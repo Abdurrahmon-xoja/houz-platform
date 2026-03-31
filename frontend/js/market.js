@@ -107,7 +107,13 @@ async function fetchAndRenderShops(activeMainIdOrSlug = 'all', activeSubIdOrSlug
     let url = `${API}/api/shops`;
     const params = new URLSearchParams();
     
-    if (activeMainIdOrSlug && activeMainIdOrSlug !== 'all') params.append('category', activeMainIdOrSlug);
+    let resolvedMainId = activeMainIdOrSlug;
+    if (resolvedMainId && resolvedMainId !== 'all' && isNaN(resolvedMainId)) {
+        const mCat = window._adminCategories ? window._adminCategories.find(c => c.slug === resolvedMainId) : null;
+        if (mCat) resolvedMainId = mCat.id;
+    }
+
+    if (resolvedMainId && resolvedMainId !== 'all') params.append('category', resolvedMainId);
     if (activeSubIdOrSlug && activeSubIdOrSlug !== 'all') params.append('subcategory', activeSubIdOrSlug);
     if (searchVal) params.append('search', searchVal);
     

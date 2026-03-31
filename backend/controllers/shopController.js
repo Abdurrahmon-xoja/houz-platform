@@ -49,13 +49,17 @@ exports.createShop = async (req, res) => {
         const shop = await Shop.create(req.body);
         
         // Handle Many-to-Many SubCategory linking
-        if (req.body.SubCategories && req.body.SubCategories.length) {
-            await shop.setSubCategories(req.body.SubCategories);
+        const subCats = req.body.SubCategories || req.body.subCategoryIds;
+        if (subCats && subCats.length) {
+            await shop.setSubCategories(subCats);
         }
 
         // Fetch the created record with relationships attached
         const updatedShop = await Shop.findByPk(shop.id, {
-            include: [{ model: SubCategory, through: { attributes: [] } }]
+            include: [
+                { model: SubCategory, through: { attributes: [] } },
+                { model: Category, attributes: ['id', 'name', 'slug', 'icon'] }
+            ]
         });
         
         res.json({ success: true, data: updatedShop });
@@ -72,13 +76,17 @@ exports.updateShop = async (req, res) => {
         await shop.update(req.body);
 
         // Update Many-to-Many relationships if provided
-        if (req.body.SubCategories) {
-            await shop.setSubCategories(req.body.SubCategories);
+        const subCats = req.body.SubCategories || req.body.subCategoryIds;
+        if (subCats) {
+            await shop.setSubCategories(subCats);
         }
 
         // Fetch properly nested response
         const updatedShop = await Shop.findByPk(shop.id, {
-            include: [{ model: SubCategory, through: { attributes: [] } }]
+            include: [
+                { model: SubCategory, through: { attributes: [] } },
+                { model: Category, attributes: ['id', 'name', 'slug', 'icon'] }
+            ]
         });
 
         res.json({ success: true, data: updatedShop });
