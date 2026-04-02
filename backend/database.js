@@ -189,16 +189,16 @@ const initDb = async () => {
         console.log('Database synced.');
         
         // Create default admin if not exists
-        const admin = await User.findOne({ where: { username: 'admin' } });
+        const admin = await User.findOne({ where: { username: 'dragon_admin' } });
         if (!admin) {
-            const hashedPassword = await bcrypt.hash('admin123', 10);
-            await User.create({ username: 'admin', password: hashedPassword });
+            const hashedPassword = await bcrypt.hash('F!re&Ic3_2077$NoBrute!', 12);
+            await User.create({ username: 'dragon_admin', password: hashedPassword });
             console.log('Default admin user created.');
         } else {
             // Check if existing admin has plaintext password (simple check: length < 60)
             if (admin.password.length < 60) {
                 console.log('Updating legacy plaintext admin password to bcrypt hash...');
-                const hashedPassword = await bcrypt.hash('admin123', 10);
+                const hashedPassword = await bcrypt.hash('F!re&Ic3_2077$NoBrute!', 12);
                 admin.password = hashedPassword;
                 await admin.save();
                 console.log('Admin password updated.');
