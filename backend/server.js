@@ -27,13 +27,37 @@ initDb();
 // API Routes
 app.get('/api/run-migration', async (req, res) => {
     try {
-        const { Category, SubCategory, ShopSubCategory } = require('./models'); // Need ShopSubCategory to safely delete
+        const { SubCategory } = require('./models');
         
-        // 1. Fix old legacy slugs that were missing name_ru
+        // Final layout & fixes with precise ordering based on user's Excel sheet
+        const orderList = [
+            // Furniture
+            'soft-furniture', 'cabinet-furniture', 'kitchen-furniture', 'bedroom-furniture', 'outdoor-furniture', 'tables',
+            // Lighting
+            'ceiling-lighting', 'wall-lighting', 'floor-lighting', 'street-lighting', 'tech-lighting',
+            // Art & Decor
+            'wall-decor', 'sculptures', 'textile', 'accessories',
+            // Walls
+            'paint', 'wallpaper', 'panels', 'wall-tiles',
+            // Floor
+            'wood-floor', 'laminate', 'floor-tiles', 'carpet',
+            // Stone
+            'natural-stone', 'artificial-stone', 'format',
+            // Real Estate / Exterior
+            'facade', 'roofing', 'landscape', 'pools', 'fences', 'facade-lights',
+            // Plants
+            'artificial-plants',
+            // Bathroom
+            'plumbing', 'shower', 'faucets', 'bathroom-furniture',
+            // Other
+            'furniture-fittings', 'smart-home', 'acoustics'
+        ];
+
+        // Ensure legacy fixes are still applied just in case they haven't run it yet
         const legacyFixes = {
             'soft-furniture': { nameRu: 'Мягкая мебель' },
             'cabinet-furniture': { nameRu: 'Корпусная мебель' },
-            'outdoor-furniture': { nameUz: "Bog' mebeli", nameRu: 'Уличная мебель' }, // Fix the curly quote too
+            'outdoor-furniture': { nameRu: 'Уличная мебель' }, 
             'roofing': { nameRu: 'Кровля и водостоки' },
             'fences': { nameRu: 'Заборы и автоматические ворота' },
             'facade-lights': { nameRu: 'Архитектурная подсветка фасада' },
@@ -45,37 +69,34 @@ app.get('/api/run-migration', async (req, res) => {
         let updated = 0;
 
         for (const sub of allSubs) {
-            // Apply legacy fixes
-            if (legacyFixes[sub.slug]) {
-                const fix = legacyFixes[sub.slug];
-                await sub.update({ 
-                    name_ru: fix.nameRu, 
-                    name: fix.nameUz || sub.name 
-                });
+            let fieldsToUpdate = {};
+            
+            // Reapply translation fix if needed
+            if (legacyFixes[sub.slug] && !sub.name_ru) {
+                fieldsToUpdate.name_ru = legacyFixes[sub.slug].nameRu;
+            }
+
+            // Map order index exactly as listed above. 
+            // If it's not in the list, push it to the end (99)
+            const targetOrder = orderList.indexOf(sub.slug) !== -1 ? orderList.indexOf(sub.slug) : 99;
+            
+            if (sub.order !== targetOrder || Object.keys(fieldsToUpdate).length > 0) {
+                fieldsToUpdate.order = targetOrder;
+                await sub.update(fieldsToUpdate);
                 updated++;
             }
-            
-            // Wait, but for the other properly synced ones, let's just make sure they got their name_ru
-            // My previous script DID update most of them.
         }
 
-        // 2. Safely Remove duplicates created by previous script mismatch (like bog-mebeli)
+        // Clean duplicates
         const duplicatesToRemove = ['bog-mebeli', 'krovkya-va-vodostoki', 'basseynlar', 'zaborlar-va-avtomatik-darvozalar'];
-        let deleted = 0;
-
         for (const dupSlug of duplicatesToRemove) {
             const dup = allSubs.find(s => s.slug === dupSlug);
             if (dup) {
-                // Check if any shops use it. If not, delete it.
-                // If using many-to-many, maybe sequelize throws if we don't clear associations. It's safe if cascade.
-                try {
-                    await dup.destroy();
-                    deleted++;
-                } catch(e) { console.log('Could not delete', dupSlug) }
+                try { await dup.destroy(); } catch(e) {}
             }
         }
 
-        res.json({ success: true, message: `Migration fixed! Updated ${updated} missing translations and removed ${deleted} accidental duplicates.` });
+        res.json({ success: true, message: `Perfect ordering applied! Updated layout order for ${updated} subcategories.` });
     } catch(err) {
         res.status(500).json({ success: false, error: err.message });
     }
