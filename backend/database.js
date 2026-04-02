@@ -183,6 +183,7 @@ const initDb = async () => {
             try { await sequelize.query("ALTER TABLE Shops ADD COLUMN socialUrl VARCHAR(255);"); } catch (e) {}
             try { await sequelize.query("ALTER TABLE Shops ADD COLUMN customLinks TEXT;"); } catch (e) {}
             try { await sequelize.query("ALTER TABLE SubCategories ADD COLUMN \"order\" INTEGER DEFAULT 0;"); } catch (e) {}
+            try { await sequelize.query("ALTER TABLE SubCategories ADD COLUMN name_ru VARCHAR(255);"); } catch (e) {}
 
             await sequelize.query('PRAGMA foreign_keys = true;');
         } else {
