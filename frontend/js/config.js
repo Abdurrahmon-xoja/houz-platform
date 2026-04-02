@@ -79,6 +79,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const langDropdown = document.getElementById('langDropdown');
   
     if (langWrap && langBtn && langDropdown) {
+
+        // ── Sync UI to saved language on every page load ──
+        const textSpan = langBtn.querySelector('.lang-text');
+        if (textSpan) textSpan.textContent = currentLang.toUpperCase();
+
+        const options = langDropdown.querySelectorAll('.lang-option');
+        options.forEach(opt => {
+            opt.classList.toggle('selected', opt.getAttribute('data-lang') === currentLang);
+        });
+        // ─────────────────────────────────────────────────
+
         langBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             langDropdown.classList.toggle('active');
@@ -90,18 +101,16 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
   
-        const options = langDropdown.querySelectorAll('.lang-option');
         options.forEach(opt => {
-            opt.addEventListener('click', (e) => {
-                 options.forEach(o => o.classList.remove('selected'));
-                 opt.classList.add('selected');
-                 langDropdown.classList.remove('active');
-                 
-                 const lang = opt.getAttribute('data-lang');
-                 const textSpan = langBtn.querySelector('.lang-text');
-                 if(textSpan) textSpan.textContent = lang.toUpperCase();
-                 
-                 switchLang(lang);
+            opt.addEventListener('click', () => {
+                options.forEach(o => o.classList.remove('selected'));
+                opt.classList.add('selected');
+                langDropdown.classList.remove('active');
+                
+                const lang = opt.getAttribute('data-lang');
+                if (textSpan) textSpan.textContent = lang.toUpperCase();
+                
+                switchLang(lang);
             });
         });
     }
