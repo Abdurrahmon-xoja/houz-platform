@@ -254,7 +254,7 @@ window.adminCategoryChanged = (categoryId, selectedSubIds = []) => {
         subSelect.innerHTML = '<span class="sub-pill-msg">В этой категории нет подкатегорий</span>';
     } else {
         const getRuName = (sc) => {
-            return sc.name; // In the live database, `name` is properly localized/stored
+            return sc.name_ru || sc.name; // prefer Russian name if available
         };
 
         subSelect.innerHTML = filtered.map(sc => {

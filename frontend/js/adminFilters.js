@@ -32,7 +32,7 @@ window.renderAdminFilters = () => {
                     <button class="btn-icon" onclick="moveFilter(${sc.id}, 1)" ${index === subCats.length - 1 ? 'disabled style="opacity:0.3"' : ''}>⬇️</button>
                 </div>
                 <div style="display: flex; flex-direction: column; justify-content: center;">
-                    <span style="font-weight: 500">${escHtml(sc.name)}</span>
+                    <span style="font-weight: 500">${escHtml(sc.name)}${sc.name_ru ? ` / ${escHtml(sc.name_ru)}` : ' <span style="color:var(--red);font-size:11px">(RU yoq)</span>'}</span>
                     <span style="font-size: 11px; color: var(--text3)">ID: ${sc.id} • Slug: ${escHtml(sc.slug)}</span>
                 </div>
             </div>
@@ -42,8 +42,11 @@ window.renderAdminFilters = () => {
 };
 
 window.addFilterPrompt = async () => {
-    const name = prompt("Введите название фильтра (например: 'Обои'):");
+    const name = prompt("Введите название фильтра на узбекском (UZ):\nНапример: 'Devorlar uchun qogʻoz'");
     if (!name || !name.trim()) return;
+
+    const nameRu = prompt("Введите название фильтра на русском (RU):\nНапример: 'Обои'");
+    // nameRu is optional but recommended
 
     const slug = prompt("Введите системный ключ латиницей (например: 'wallpaper'):");
     if (!slug || !slug.trim()) return;
@@ -57,9 +60,10 @@ window.addFilterPrompt = async () => {
             },
             body: JSON.stringify({
                 name: name.trim(),
+                name_ru: nameRu ? nameRu.trim() : null,
                 slug: slug.trim().toLowerCase(),
                 CategoryId: _currentAdminCategoryId,
-                order: window._adminSubCategories.length // Add to end
+                order: window._adminSubCategories.length
             })
         });
 
