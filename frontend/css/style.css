@@ -1962,10 +1962,9 @@ body {
 }
 
 .cat-pill.active {
-    background: var(--text);
-    /* Black in light mode, White in dark mode */
-    color: var(--bg);
-    /* White in light mode, Black in dark mode */
+    background: var(--accent);
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(15, 169, 134, 0.3);
 }
 
 /* Toolbar */
