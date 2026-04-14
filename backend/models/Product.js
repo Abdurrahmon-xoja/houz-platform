@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.DECIMAL(10, 2)
         },
         imageUrl: {
-            type: DataTypes.STRING
+            type: DataTypes.TEXT
         },
         isAvailable: {
             type: DataTypes.BOOLEAN,

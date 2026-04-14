@@ -41,7 +41,7 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING
         },
         logoUrl: {
-            type: DataTypes.STRING
+            type: DataTypes.TEXT
         },
         isActive: {
             type: DataTypes.BOOLEAN,
