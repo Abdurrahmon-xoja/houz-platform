@@ -33,12 +33,6 @@ exports.uploadImage = (req, res) => {
         return res.status(400).json({ success: false, message: 'No file uploaded' });
     }
     
-    // Convert Buffer to Base64 String
-    const b64 = Buffer.from(req.file.buffer).toString('base64');
-    let mimeType = req.file.mimetype;
-    
-    // Construct the Data URI
-    const dataURI = `data:${mimeType};base64,${b64}`;
-    
-    res.json({ success: true, data: { url: dataURI } });
+    // With multer-storage-cloudinary, the uploaded URL is available at req.file.path
+    res.json({ success: true, data: { url: req.file.path } });
 };
