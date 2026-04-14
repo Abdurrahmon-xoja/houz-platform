@@ -101,7 +101,15 @@ async function fetchAndRenderShops(activeMainIdOrSlug = 'all', activeSubIdOrSlug
   const grid = document.getElementById('shopsGrid');
   if (!grid) return;
 
-  grid.innerHTML = '<div class="loader" id="shopLoader"></div>';
+  grid.innerHTML = Array(6).fill().map(() => `
+    <div class="skeleton-card">
+      <div class="skeleton-logo"></div>
+      <div class="skeleton-info">
+        <div class="skeleton-line"></div>
+        <div class="skeleton-line short"></div>
+      </div>
+    </div>
+  `).join('');
 
   try {
     let url = `${API}/api/shops`;
