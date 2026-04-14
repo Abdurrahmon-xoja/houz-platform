@@ -27,17 +27,20 @@ app.get('/shops.html', async (req, res, next) => {
     if (!shopId) return next(); // Pass down to static server if not a specific shop share
 
     try {
-        const { Shop } = require('./models');
-        const shop = await Shop.findByPk(shopId);
+        const { Shop, Category } = require('./models');
+        const shop = await Shop.findByPk(shopId, { include: [{ model: Category }] });
 
         if (!shop) return next();
 
         let html = fs.readFileSync(path.join(__dirname, '../frontend/shops.html'), 'utf-8');
         
-        const safeTitle = (shop.name || 'Ho.uz').replace(/"/g, '&quot;');
+        const catName = shop.Category ? (shop.Category.name_ru || shop.Category.name) : '';
+        const titleStr = catName ? `${catName} - ${shop.name}` : shop.name;
+        const safeTitle = (titleStr || 'Ho.uz').replace(/"/g, '&quot;');
+        
         const rawDesc = shop.description_ru || shop.description || "Ho.uz katalogidan do'kon sahifasini ko'ring.";
         const safeDesc = rawDesc.substring(0, 160).replace(/"/g, '&quot;');
-        const safeImage = shop.logoUrl || 'https://topin.uz/img/Furniture.png';
+        const safeImage = shop.logoUrl || 'https://topin.uz/img/logo.png';
         const url = `https://topin.uz/shops.html?category=${req.query.category || 'all'}&shop=${shopId}`;
 
         const ogTags = `
