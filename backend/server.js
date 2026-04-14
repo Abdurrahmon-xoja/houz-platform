@@ -40,7 +40,7 @@ app.get('/shops.html', async (req, res, next) => {
         
         const rawDesc = shop.description_ru || shop.description || "Ho.uz katalogidan do'kon sahifasini ko'ring.";
         const safeDesc = rawDesc.substring(0, 160).replace(/"/g, '&quot;');
-        const safeImage = shop.logoUrl || 'https://topin.uz/img/logo.png';
+        const safeImage = shop.logoUrl || 'https://placehold.co/1200x630/111113/FFFFFF/png?text=TOPIN';
         const url = `https://topin.uz/shops.html?category=${req.query.category || 'all'}&shop=${shopId}`;
 
         const ogTags = `
