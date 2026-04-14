@@ -2196,3 +2196,50 @@ body {
         height: 60px;
     }
 }
+
+/* ─── Skeleton Home Card ──────────────────────────────────── */
+.skeleton-home-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 16px;
+    gap: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    aspect-ratio: 1 / 1;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+    animation: skeleton-pulse 1.5s infinite ease-in-out;
+}
+
+.skeleton-home-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: var(--bg2);
+    margin-bottom: 8px;
+}
+
+.skeleton-home-text {
+    width: 60%;
+    height: 12px;
+    border-radius: 4px;
+    background: var(--bg2);
+    margin-top: auto;
+}
+
+@media (min-width: 480px) and (max-width: 767px) {
+    .skeleton-home-card {
+        aspect-ratio: 182 / 133;
+        padding: 18px;
+    }
+}
+
+@media (min-width: 768px) {
+    .skeleton-home-card {
+        border-radius: 20px;
+        padding: 20px;
+        aspect-ratio: 182 / 133;
+    }
+}

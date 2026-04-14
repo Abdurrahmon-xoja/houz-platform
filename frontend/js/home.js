@@ -6,9 +6,17 @@ async function initIndexPage() {
 }
   
 async function loadCategoriesHome() {
-    const grid = document.getElementById('homeGrid');
+  const grid = document.getElementById('homeGrid');
     if (!grid) return;
   
+    // Show skeleton loader first
+    grid.innerHTML = Array(10).fill().map(() => `
+      <div class="skeleton-home-card">
+        <div class="skeleton-home-icon"></div>
+        <div class="skeleton-home-text"></div>
+      </div>
+    `).join('');
+
     const categories = [
       { name: 'Furniture',    slug: 'furniture',    image: 'img/Furniture.png' },
       { name: 'Lighting',     slug: 'lighting',     image: 'img/Lighting.png' },
@@ -22,6 +30,9 @@ async function loadCategoriesHome() {
       { name: 'Other',        slug: 'other',        image: 'img/Other.png' },
     ];
   
+    // Simulate slight network delay for effect
+    await new Promise(r => setTimeout(r, 800));
+
     grid.innerHTML = categories.map((cat, i) => `
       <a href="shops.html?category=${encodeURIComponent(cat.slug)}&name=${encodeURIComponent(getCatName(cat.slug))}"
          class="home-card"
