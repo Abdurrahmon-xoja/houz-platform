@@ -85,12 +85,30 @@ function openShopModal(shopId) {
       shareBtn.onclick = async () => {
         const shareCat = shop.Category && shop.Category.slug ? shop.Category.slug : _activeMainCategory;
         const shareUrl = `${window.location.origin}${window.location.pathname}?category=${shareCat}&shop=${shop.id}`;
+        const shopTitle = shop.name;
+        const shopText = currentLang === 'ru' ? `Смотрите ${shop.name} на Ho.uz!` : `${shop.name} ni Ho.uz da ko'ring!`;
         
-        try {
-          await navigator.clipboard.writeText(shareUrl);
-          showToast(currentLang === 'ru' ? 'Ссылка скопирована' : 'Havola nusxalandi', 'success');
-        } catch (err) {
-          showToast('Xatolik yuz berdi', 'error');
+        if (navigator.share) {
+            try {
+                await navigator.share({
+                    title: shopTitle,
+                    text: shopText,
+                    url: shareUrl
+                });
+            } catch (err) {
+                // Ignore AbortError when user dismisses the share sheet
+                if (err.name !== 'AbortError') {
+                    console.error('Share error', err);
+                }
+            }
+        } else {
+            // Fallback for desktop or unsupported browsers
+            try {
+                await navigator.clipboard.writeText(shareUrl);
+                showToast(currentLang === 'ru' ? 'Ссылка скопирована' : 'Havola nusxalandi', 'success');
+            } catch (err) {
+                showToast(currentLang === 'ru' ? 'Ошибка' : 'Xatolik yuz berdi', 'error');
+            }
         }
       };
     }
