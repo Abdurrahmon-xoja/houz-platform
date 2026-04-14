@@ -38,26 +38,26 @@ app.get('/shops.html', async (req, res, next) => {
         const rawDesc = shop.description_ru || shop.description || "Ho.uz katalogidan do'kon sahifasini ko'ring.";
         const safeDesc = rawDesc.substring(0, 160).replace(/"/g, '&quot;');
         const safeImage = shop.logoUrl || 'https://topin.uz/img/Furniture.png';
-        const url = \`https://topin.uz/shops.html?category=\${req.query.category || 'all'}&shop=\${shopId}\`;
+        const url = `https://topin.uz/shops.html?category=${req.query.category || 'all'}&shop=${shopId}`;
 
-        const ogTags = \`
+        const ogTags = `
     <!-- Dynamic Open Graph Data -->
-    <meta property="og:title" content="\${safeTitle}">
-    <meta property="og:description" content="\${safeDesc}">
-    <meta property="og:image" content="\${safeImage}">
-    <meta property="og:url" content="\${url}">
+    <meta property="og:title" content="${safeTitle}">
+    <meta property="og:description" content="${safeDesc}">
+    <meta property="og:image" content="${safeImage}">
+    <meta property="og:url" content="${url}">
     <meta property="og:type" content="website">
     
     <!-- Dynamic Twitter Card Data -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="\${safeTitle}">
-    <meta name="twitter:description" content="\${safeDesc}">
-    <meta name="twitter:image" content="\${safeImage}">
-        \`;
+    <meta name="twitter:title" content="${safeTitle}">
+    <meta name="twitter:description" content="${safeDesc}">
+    <meta name="twitter:image" content="${safeImage}">
+        `;
 
         // Inject into <head>
-        html = html.replace('</head>', \`\${ogTags}\\n</head>\`);
-        html = html.replace(/<title>.*<\\/title>/, \`<title>\${safeTitle} | Ho.uz</title>\`);
+        html = html.replace('</head>', `${ogTags}\n</head>`);
+        html = html.replace(/<title>.*<\/title>/, `<title>${safeTitle} | Ho.uz</title>`);
 
         return res.send(html);
     } catch (err) {
