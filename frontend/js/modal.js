@@ -86,7 +86,7 @@ function openShopModal(shopId) {
         const shareCat = shop.Category && shop.Category.slug ? shop.Category.slug : _activeMainCategory;
         const shareUrl = `${window.location.origin}${window.location.pathname}?category=${shareCat}&shop=${shop.id}`;
         const shopTitle = shop.name;
-        const shopText = currentLang === 'ru' ? `Смотрите ${shop.name} на Ho.uz!` : `${shop.name} ni Ho.uz da ko'ring!`;
+        const shopText = shop.name;
         
         if (navigator.share) {
             try {
