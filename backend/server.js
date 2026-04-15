@@ -38,9 +38,9 @@ app.get('/shops.html', async (req, res, next) => {
         const titleStr = catName ? `${catName} - ${shop.name}` : shop.name;
         const safeTitle = (titleStr || 'Ho.uz').replace(/"/g, '&quot;');
         
-        const rawDesc = shop.description_ru || shop.description || "Ho.uz katalogidan do'kon sahifasini ko'ring.";
+        const rawDesc = shop.description_ru || shop.description || "";
         const safeDesc = rawDesc.substring(0, 160).replace(/"/g, '&quot;');
-        const safeImage = 'https://topin.uz/img/og_logo.png';
+        const safeImage = 'https://topin.uz/img/Topin_logo.jpeg';
         const url = `https://topin.uz/shops.html?category=${req.query.category || 'all'}&shop=${shopId}`;
 
         const ogTags = `
