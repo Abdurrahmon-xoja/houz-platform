@@ -44,17 +44,26 @@ async function loadCategoriesHome() {
       { name: 'Other',        slug: 'other',        image: categoryImages['other'] },
     ];
   
-    // Simulate slight network delay for effect
-    await new Promise(r => setTimeout(r, 800));
+    // Preload all images before showing
+    await Promise.all(categories.map(cat => new Promise(resolve => {
+        const img = new Image();
+        img.onload = resolve;
+        img.onerror = resolve;
+        img.src = cat.image;
+    })));
 
-    grid.innerHTML = categories.map((cat, i) => `
+    grid.innerHTML = categories.map(cat => `
       <a href="shops.html?category=${encodeURIComponent(cat.slug)}&name=${encodeURIComponent(getCatName(cat.slug))}"
-         class="home-card"
-         style="animation-delay:${i * 0.05}s">
-        <img src="${cat.image}" alt="${escHtml(getCatName(cat.slug))}" class="home-card-img"loading="lazy">
+         class="home-card home-card-hidden">
+        <img src="${cat.image}" alt="${escHtml(getCatName(cat.slug))}" class="home-card-img">
         <span class="home-card-label">${escHtml(getCatName(cat.slug))}</span>
       </a>
     `).join('');
+
+    // Trigger fade-in on next frame so transition fires
+    requestAnimationFrame(() => {
+        grid.querySelectorAll('.home-card-hidden').forEach(el => el.classList.remove('home-card-hidden'));
+    });
     
     // Update header badge if present
     const countBadge = document.getElementById('shopCountBadge');
