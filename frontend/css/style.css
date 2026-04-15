@@ -1723,7 +1723,7 @@ body {
     color: var(--text);
     position: relative;
     overflow: hidden;
-    transition: transform 0.2s, background 0.2s, opacity 5s ease, filter 5s ease;
+    transition: transform 0.2s, background 0.2s, opacity 2s ease, filter 2s ease;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
     opacity: 1;
     filter: blur(0px);
