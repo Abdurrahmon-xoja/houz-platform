@@ -180,12 +180,12 @@ function renderShops(shops) {
     return;
   }
 
-  grid.innerHTML = shops.map((shop, i) => {
+  grid.innerHTML = shops.map(shop => {
     return `
-    <div class="market-card" style="animation-delay:${i * 0.05}s"
+    <div class="market-card market-card-hidden"
          onclick="openShopModal(${shop.id})" role="button" tabindex="0"
          onkeydown="if(event.key==='Enter')openShopModal(${shop.id})">
-      
+
       <div class="market-logo-box">
         ${logoFallback(shop.logoUrl, shop.name)}
       </div>
@@ -203,6 +203,10 @@ function renderShops(shops) {
 
     </div>`;
   }).join('');
+
+  requestAnimationFrame(() => {
+    grid.querySelectorAll('.market-card-hidden').forEach(el => el.classList.remove('market-card-hidden'));
+  });
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
