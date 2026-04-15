@@ -205,7 +205,9 @@ function renderShops(shops) {
   }).join('');
 
   requestAnimationFrame(() => {
-    grid.querySelectorAll('.market-card-hidden').forEach(el => el.classList.remove('market-card-hidden'));
+    requestAnimationFrame(() => {
+      grid.querySelectorAll('.market-card-hidden').forEach(el => el.classList.remove('market-card-hidden'));
+    });
   });
 }
 
