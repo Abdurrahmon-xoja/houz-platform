@@ -12,7 +12,8 @@ const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
     folder: 'houz_shops',
-    allowedFormats: ['jpeg', 'png', 'jpg', 'svg', 'webp'],
+    allowedFormats: ['jpeg', 'png', 'jpg', 'webp'],
+    transformation: [{ quality: 'auto', fetch_format: 'auto', width: 800, crop: 'limit' }],
   },
 });
 
