@@ -15,9 +15,15 @@ return String(str || '')
     .replace(/"/g, '&quot;');
 }
 
+function cloudinaryOptimize(url) {
+    if (!url || !url.includes('res.cloudinary.com')) return url;
+    return url.replace('/upload/', '/upload/q_auto,f_auto,w_400/');
+}
+
 function logoFallback(logoUrl, name) {
 if (logoUrl) {
-    return `<img src="${escHtml(logoUrl)}" alt="${escHtml(name)}" 
+    const optimizedUrl = cloudinaryOptimize(logoUrl);
+    return `<img src="${escHtml(optimizedUrl)}" alt="${escHtml(name)}"
             onerror="this.replaceWith(document.createTextNode('🏪'))">`;
 }
 const letter = (name || '?').charAt(0).toUpperCase();
