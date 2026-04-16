@@ -863,10 +863,25 @@ select {
     text-decoration: none;
     transition: background 0.2s;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+    outline: none;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-user-select: none;
+    user-select: none;
+    cursor: pointer;
 }
 
-.modal-row:hover {
-    background: var(--border);
+.modal-row:focus,
+.modal-row:focus-visible,
+.modal-row:active {
+    outline: none;
+    border-color: var(--border);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .modal-row:hover {
+        background: var(--border);
+    }
 }
 
 .modal-row-svg {

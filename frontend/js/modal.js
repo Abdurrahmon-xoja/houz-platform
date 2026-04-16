@@ -70,10 +70,10 @@ function openShopModal(shopId) {
       </div>`);
     }
     if (shop.phone) {
-      rows.push(`<a href="tel:${escHtml(shop.phone)}" class="modal-row">
+      rows.push(`<div class="modal-row" onclick="window.location.href='tel:${escHtml(shop.phone)}'" style="cursor:pointer">
         <img src="img/icons/phone%20icon.svg" class="modal-row-svg" alt="Phone">
         <span class="modal-row-text">${escHtml(shop.phone)}</span>
-      </a>`);
+      </div>`);
     }
   
     document.getElementById('modalRows').innerHTML = rows.join('');
