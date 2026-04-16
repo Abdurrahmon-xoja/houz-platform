@@ -55,7 +55,7 @@ async function loadCategoriesHome() {
     grid.innerHTML = categories.map(cat => `
       <a href="shops.html?category=${encodeURIComponent(cat.slug)}&name=${encodeURIComponent(getCatName(cat.slug))}"
          class="home-card home-card-hidden">
-        <img src="${cat.image}" alt="${escHtml(getCatName(cat.slug))}" class="home-card-img">
+        <img src="${cat.image}" alt="${escHtml(getCatName(cat.slug))}" class="home-card-img" draggable="false" style="pointer-events:none;">
         <span class="home-card-label">${escHtml(getCatName(cat.slug))}</span>
       </a>
     `).join('');

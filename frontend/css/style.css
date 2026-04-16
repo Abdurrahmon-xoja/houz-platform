@@ -1819,6 +1819,10 @@ body {
     margin-bottom: 0;
     mix-blend-mode: multiply;
     flex-shrink: 0;
+    pointer-events: none;
+    user-select: none;
+    -webkit-user-drag: none;
+    -webkit-touch-callout: none;
 }
 
 @media (min-width: 480px) and (max-width: 767px) {
