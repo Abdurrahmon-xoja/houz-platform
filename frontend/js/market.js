@@ -67,7 +67,7 @@ async function buildCategoryTabs(activeMainSlug) {
       tabsEl.parentNode.style.display = 'none';
       return;
   } else {
-      tabsEl.parentNode.style.display = 'flex';
+      tabsEl.parentNode.style.display = 'block';
   }
 
   const allTabs = [{ name: t('hammasi'), nameRu: t('hammasi'), slug: 'all', id: 'all' }, ...subCats];
@@ -222,16 +222,55 @@ function renderShops(shops) {
   });
 }
 
+function enableDragScroll(el) {
+    let isDown = false;
+    let startX;
+    let scrollLeft;
+
+    el.addEventListener('mousedown', (e) => {
+        isDown = true;
+        el.style.cursor = 'grabbing';
+        startX = e.pageX - el.offsetLeft;
+        scrollLeft = el.scrollLeft;
+        e.preventDefault();
+    });
+
+    el.addEventListener('mouseleave', () => {
+        isDown = false;
+        el.style.cursor = '';
+    });
+
+    el.addEventListener('mouseup', () => {
+        isDown = false;
+        el.style.cursor = '';
+    });
+
+    el.addEventListener('mousemove', (e) => {
+        if (!isDown) return;
+        const x = e.pageX - el.offsetLeft;
+        el.scrollLeft = scrollLeft - (x - startX);
+    });
+
+    el.addEventListener('wheel', (e) => {
+        if (e.deltaY !== 0 && el.scrollWidth > el.clientWidth) {
+            e.preventDefault();
+            el.scrollLeft += e.deltaY;
+        }
+    }, { passive: false });
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
     // Need to pre-fetch categories globally so market tabs can match name to ID correctly
     try {
         const catsRes = await fetch(`${API}/api/categories`);
         window._adminCategories = (await catsRes.json()).data || [];
     } catch(e) {}
-    
+
     const path = window.location.pathname;
     const page = path.split('/').pop() || 'index.html';
     if (page === 'shops.html') {
         initShopsPage();
+        const wrap = document.querySelector('.markets-categories-wrap');
+        if (wrap) enableDragScroll(wrap);
     }
 });
