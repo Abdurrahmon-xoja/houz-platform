@@ -5,6 +5,8 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent !important;
+    outline: none !important;
 }
 
 :root {
@@ -2081,6 +2083,14 @@ body {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
     opacity: 1;
     filter: blur(0px);
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+.market-card:focus,
+.market-card:focus-visible {
+    border-color: var(--border);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
 }
 
 .market-card-hidden {
