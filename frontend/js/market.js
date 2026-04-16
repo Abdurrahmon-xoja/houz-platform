@@ -226,9 +226,11 @@ function enableDragScroll(el) {
     let isDown = false;
     let startX;
     let scrollLeft;
+    let didDrag = false;
 
     el.addEventListener('mousedown', (e) => {
         isDown = true;
+        didDrag = false;
         el.style.cursor = 'grabbing';
         startX = e.pageX - el.offsetLeft;
         scrollLeft = el.scrollLeft;
@@ -248,8 +250,18 @@ function enableDragScroll(el) {
     el.addEventListener('mousemove', (e) => {
         if (!isDown) return;
         const x = e.pageX - el.offsetLeft;
-        el.scrollLeft = scrollLeft - (x - startX);
+        const walk = x - startX;
+        if (Math.abs(walk) > 5) didDrag = true;
+        el.scrollLeft = scrollLeft - walk;
     });
+
+    // Block click on children if user dragged (prevents accidental pill activation)
+    el.addEventListener('click', (e) => {
+        if (didDrag) {
+            e.stopPropagation();
+            didDrag = false;
+        }
+    }, true);
 
     el.addEventListener('wheel', (e) => {
         if (e.deltaY !== 0 && el.scrollWidth > el.clientWidth) {
