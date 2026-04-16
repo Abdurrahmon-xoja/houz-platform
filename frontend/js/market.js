@@ -160,11 +160,13 @@ async function fetchAndRenderShops(activeMainIdOrSlug = 'all', activeSubIdOrSlug
 
 function getActiveCategoryName() {
   if (_activeMainCategory === 'all') return t('shopsCount');
-  if (window._adminCategories) {
+  const translated = getCatName(_activeMainCategory);
+  // getCatName returns the slug itself if no i18n match — fall back to DB name
+  if (translated === _activeMainCategory && window._adminCategories) {
     const cat = window._adminCategories.find(c => c.slug === _activeMainCategory);
-    if (cat) return currentLang === 'ru' && cat.name_ru ? cat.name_ru : (cat.name || cat.name_ru || _activeMainCategory);
+    if (cat) return cat.name;
   }
-  return getCatName(_activeMainCategory);
+  return translated;
 }
 
 function renderShops(shops) {
