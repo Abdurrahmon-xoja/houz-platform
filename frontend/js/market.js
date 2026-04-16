@@ -158,13 +158,22 @@ async function fetchAndRenderShops(activeMainIdOrSlug = 'all', activeSubIdOrSlug
   }
 }
 
+function getActiveCategoryName() {
+  if (_activeMainCategory === 'all') return t('shopsCount');
+  if (window._adminCategories) {
+    const cat = window._adminCategories.find(c => c.slug === _activeMainCategory);
+    if (cat) return currentLang === 'ru' && cat.name_ru ? cat.name_ru : (cat.name || cat.name_ru || _activeMainCategory);
+  }
+  return getCatName(_activeMainCategory);
+}
+
 function renderShops(shops) {
   const grid = document.getElementById('shopsGrid');
   const countEl = document.getElementById('shopCount');
   const pageCountEl = document.getElementById('pageCount');
   if (!grid) return;
 
-  if (countEl) countEl.textContent = `${t('shopsCount')} ${shops.length}`;
+  if (countEl) countEl.textContent = `${getActiveCategoryName()} ${shops.length}`;
   if (pageCountEl) pageCountEl.textContent = `${shops.length} ta`;
 
   const filterBtn = document.querySelector('.btn-outline-small.btn-filter');
