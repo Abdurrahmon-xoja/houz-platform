@@ -33,3 +33,17 @@ return `<span style="font-size:22px;font-weight:800;color:var(--accent)">${lette
 function goExternal(url) {
     if (url) window.open(url, '_blank', 'noopener noreferrer');
 }
+
+// Tap feedback: briefly add .tapped class and remove it immediately on touchend
+document.addEventListener('touchstart', (e) => {
+    const el = e.target.closest('.market-card, .cat-pill, .home-card');
+    if (el) el.classList.add('tapped');
+}, { passive: true });
+
+document.addEventListener('touchend', () => {
+    document.querySelectorAll('.tapped').forEach(el => el.classList.remove('tapped'));
+}, { passive: true });
+
+document.addEventListener('touchcancel', () => {
+    document.querySelectorAll('.tapped').forEach(el => el.classList.remove('tapped'));
+}, { passive: true });

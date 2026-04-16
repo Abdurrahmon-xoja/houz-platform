@@ -1806,7 +1806,7 @@ body {
     }
 }
 
-.home-card:active {
+.home-card.tapped {
     transform: scale(0.97);
     background: var(--surface2);
 }
@@ -1981,7 +1981,7 @@ body {
     }
 }
 
-.cat-pill:active {
+.cat-pill.tapped {
     opacity: 0.7;
 }
 
@@ -2053,7 +2053,7 @@ body {
     }
 }
 
-.market-card:active {
+.market-card.tapped {
     background: var(--surface2);
     transform: scale(0.98);
 }
