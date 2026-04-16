@@ -726,11 +726,25 @@ select {
     justify-content: center;
     transition: all 0.2s;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    outline: none;
+    -webkit-appearance: none;
+    appearance: none;
+    -webkit-tap-highlight-color: transparent;
 }
 
 .modal-close:hover {
     background: var(--surface);
     color: var(--text);
+}
+
+.modal-close:focus,
+.modal-close:focus-visible,
+.btn-modal-share:focus,
+.btn-modal-share:focus-visible,
+.btn-modal-primary:focus,
+.btn-modal-primary:focus-visible {
+    outline: none;
+    box-shadow: none;
 }
 
 .modal-content-grid {
@@ -877,6 +891,10 @@ select {
     justify-content: center;
     gap: 8px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+    outline: none;
+    -webkit-appearance: none;
+    appearance: none;
+    -webkit-tap-highlight-color: transparent;
 }
 
 .btn-modal-share:hover {
@@ -899,6 +917,10 @@ select {
     align-items: center;
     justify-content: center;
     gap: 8px;
+    outline: none;
+    -webkit-appearance: none;
+    appearance: none;
+    -webkit-tap-highlight-color: transparent;
 }
 
 .btn-modal-primary:hover {
