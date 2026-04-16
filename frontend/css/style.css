@@ -50,6 +50,16 @@ a {
 
 button {
     font-family: inherit;
+    outline: none;
+    -webkit-appearance: none;
+    appearance: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+*:focus,
+*:focus-visible {
+    outline: none !important;
+    box-shadow: none !important;
 }
 
 input,
