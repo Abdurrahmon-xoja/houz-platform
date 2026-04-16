@@ -1971,7 +1971,13 @@ body {
     font-size: 14px;
     font-weight: 500;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+    outline: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.cat-pill:focus {
+    outline: none;
 }
 
 @media (hover: hover) and (pointer: fine) {
