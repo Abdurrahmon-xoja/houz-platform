@@ -1974,10 +1974,14 @@ body {
     transition: background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
     outline: none;
     -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    -webkit-user-select: none;
 }
 
-.cat-pill:focus {
+.cat-pill:focus,
+.cat-pill:focus-visible {
     outline: none;
+    box-shadow: none;
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -1994,7 +1998,7 @@ body {
 .cat-pill.active {
     background: var(--accent);
     color: #ffffff;
-    box-shadow: 0 4px 12px rgba(15, 169, 134, 0.3);
+    font-weight: 600;
 }
 
 /* Toolbar */
