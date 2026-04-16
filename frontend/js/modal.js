@@ -11,18 +11,28 @@ function openShopModal(shopId) {
     const desc = currentLang === 'ru' ? (shop.description_ru || shop.description) : shop.description;
     document.getElementById('modalDescFull').textContent = desc || t('descPlaceholder');
   
-    const loc = shop.location || t('locPlaceholder');
     document.getElementById('modalLocText').textContent = shop.location || t('locPlaceholder');
-  
+
+    // Make location clickable if a map link exists
+    const locEl = document.getElementById('modalLoc');
+    if (locEl) {
+      if (shop.locationLink) {
+        locEl.style.cursor = 'pointer';
+        locEl.style.textDecoration = 'underline';
+        locEl.onclick = () => goExternal(shop.locationLink);
+      } else if (shop.location) {
+        locEl.style.cursor = 'pointer';
+        locEl.style.textDecoration = 'underline';
+        locEl.onclick = () => goExternal(`https://maps.google.com/?q=${encodeURIComponent(shop.location)}`);
+      } else {
+        locEl.style.cursor = '';
+        locEl.style.textDecoration = '';
+        locEl.onclick = null;
+      }
+    }
+
     // Rows
     const rows = [];
-    if (shop.locationLink) {
-      const shortLink = shop.locationLink.includes('maps.google') ? 'Google Maps' : (shop.locationLink.includes('yandex') ? 'Yandex Maps' : 'Xarita/Map');
-      rows.push(`<div class="modal-row" onclick="goExternal('${escHtml(shop.locationLink)}')" style="cursor:pointer">
-        <span class="modal-row-svg" style="font-size: 18px">📍</span>
-        <span class="modal-row-text" style="color:var(--accent); text-decoration:underline">${shortLink}</span>
-      </div>`);
-    }
     if (shop.instagram) {
       const handle = shop.instagram.split('/').pop().replace('?','');
       rows.push(`<div class="modal-row" onclick="goExternal('${escHtml(shop.instagram)}')" style="cursor:pointer">
@@ -114,22 +124,7 @@ function openShopModal(shopId) {
     }
   
     if (dirBtn) {
-      dirBtn.innerHTML = `
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polygon points="3 11 22 2 13 21 11 13 3 11"></polygon>
-        </svg>
-        ${t('directions')}
-      `;
-      // Decide which link to open, locationLink > location string search > nothing
-      dirBtn.onclick = () => {
-        if (shop.locationLink) {
-          goExternal(shop.locationLink);
-        } else if (shop.location) {
-          goExternal(`https://maps.google.com/?q=${encodeURIComponent(shop.location)}`);
-        } else {
-          showToast(currentLang === 'ru' ? 'Маршрут не найден' : "Manzil kiritilmagan", 'error');
-        }
-      };
+      dirBtn.style.display = 'none';
     }
   
     const overlay = document.getElementById('shopModal');
