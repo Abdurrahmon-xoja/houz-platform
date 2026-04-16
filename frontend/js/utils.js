@@ -42,6 +42,10 @@ document.addEventListener('touchstart', (e) => {
 
 document.addEventListener('touchend', () => {
     document.querySelectorAll('.tapped').forEach(el => el.classList.remove('tapped'));
+    // Blur whatever got focus from this tap so mobile browser doesn't keep it "active"
+    if (document.activeElement && document.activeElement !== document.body) {
+        document.activeElement.blur();
+    }
 }, { passive: true });
 
 document.addEventListener('touchcancel', () => {
