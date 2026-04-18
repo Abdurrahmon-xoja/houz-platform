@@ -8,6 +8,10 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             allowNull: true
         },
+        name_en: {
+            type: DataTypes.STRING,
+            allowNull: true
+        },
         slug: {
             type: DataTypes.STRING,
             allowNull: false

@@ -46,7 +46,7 @@ window.addFilterPrompt = async () => {
     if (!name || !name.trim()) return;
 
     const nameRu = prompt("Введите название фильтра на русском (RU):\nНапример: 'Обои'");
-    // nameRu is optional but recommended
+    const nameEn = prompt("Enter filter name in English (EN):\nExample: 'Wallpaper'");
 
     const slug = prompt("Введите системный ключ латиницей (например: 'wallpaper'):");
     if (!slug || !slug.trim()) return;
@@ -54,13 +54,14 @@ window.addFilterPrompt = async () => {
     try {
         const res = await fetch(`${API}/api/subcategories`, {
             method: 'POST',
-            headers: { 
+            headers: {
               'Content-Type': 'application/json',
               'Authorization': `Bearer ${localStorage.getItem(TOKEN_KEY)}`
             },
             body: JSON.stringify({
                 name: name.trim(),
                 name_ru: nameRu ? nameRu.trim() : null,
+                name_en: nameEn ? nameEn.trim() : null,
                 slug: slug.trim().toLowerCase(),
                 CategoryId: _currentAdminCategoryId,
                 order: window._adminSubCategories.length

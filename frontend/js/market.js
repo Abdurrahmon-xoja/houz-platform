@@ -73,7 +73,9 @@ async function buildCategoryTabs(activeMainSlug) {
   const allTabs = [{ name: t('hammasi'), nameRu: t('hammasi'), slug: 'all', id: 'all' }, ...subCats];
 
   tabsEl.innerHTML = allTabs.map(cat => {
-    const displayName = currentLang === 'uz' ? (cat.name || cat.name_ru) : (cat.name_ru || cat.name);
+    const displayName = currentLang === 'uz' ? (cat.name || cat.name_ru)
+                      : currentLang === 'en' ? (cat.name_en || cat.name_ru || cat.name)
+                      : (cat.name_ru || cat.name);
     return `
     <button class="cat-pill ${cat.slug === _activeSubCategory || String(cat.id) === _activeSubCategory ? 'active' : ''}"
             data-slug="${escHtml(cat.slug)}"
