@@ -56,6 +56,33 @@ const i18n = {
       "bathroom": "Ванная комната",
       "other": "Другое"
     }
+  },
+  en: {
+    home: "Home",
+    allShops: "All shops",
+    hammasi: "All",
+    shopsCount: "Shops",
+    filter: "Filter",
+    searchPlaceholder: "Search shop, address or category...",
+    share: "Share",
+    directions: "Directions",
+    close: "Close",
+    notFound: "No shops found",
+    searchOther: "Try a different keyword or category.",
+    descPlaceholder: "No information provided",
+    locPlaceholder: "Main office address not provided",
+    cat: {
+      "furniture": "Furniture",
+      "lighting": "Lighting",
+      "art-decor": "Art & Decor",
+      "walls": "Walls",
+      "floor": "Floor",
+      "stone": "Stone",
+      "real-estate": "Exterior",
+      "plants": "Plants",
+      "bathroom": "Bathroom",
+      "other": "Other"
+    }
   }
 };
 
