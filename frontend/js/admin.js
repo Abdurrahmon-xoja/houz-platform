@@ -38,7 +38,7 @@ function renderAdminCategories() {
     if (!catGrid || !window._adminCategories) return;
 
     if (window._adminCategories.length === 0) {
-        catGrid.innerHTML = `<div class="empty-state"><p>Категории не найдены.</p></div>`;
+        catGrid.innerHTML = `<div class="empty-state"><p>${t('catsNotFound')}</p></div>`;
         return;
     }
 
@@ -54,7 +54,7 @@ function renderAdminCategories() {
                     <div class="admin-cat-icon">${icon}</div>
                     <div class="admin-cat-text">
                         <h3 style="margin:0">${escHtml(nameRu)}</h3>
-                        <p style="margin: 4px 0 0 0;">${count} магазинов</p>
+                        <p style="margin: 4px 0 0 0;">${count} ${t('shopsCountLabel')}</p>
                     </div>
                 </div>
                 <div class="admin-cat-chevron">
@@ -62,7 +62,7 @@ function renderAdminCategories() {
                 </div>
             </div>
             <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end;">
-                 <button type="button" class="btn-edit" onclick="event.stopPropagation(); window.showFiltersView(${cat.id}, '${escHtml(nameRu)}')" style="font-size: 13px; padding: 6px 12px;">Filtrlarni Boshqarish</button>
+                 <button type="button" class="btn-edit" onclick="event.stopPropagation(); window.showFiltersView(${cat.id}, '${escHtml(nameRu)}')" style="font-size: 13px; padding: 6px 12px;">${t('manageFilters')}</button>
             </div>
         </div>
         `;
@@ -88,13 +88,13 @@ window.showAdminShopsView = (categoryId, categoryName) => {
     const shopsView = document.getElementById('adminShopsView');
     shopsView.style.display = 'block';
     
-    document.getElementById('adminShopsTitle').textContent = categoryName || 'Магазины';
+    document.getElementById('adminShopsTitle').textContent = categoryName || t('shops');
     
     const tbody = document.getElementById('adminTableBody');
     const filteredShops = _adminShops.filter(s => s.CategoryId === categoryId);
 
     if (filteredShops.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--text3);padding:40px">В этой категории пока нет магазинов.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--text3);padding:40px">${t('noShopsInCat')}</td></tr>`;
         return;
     }
 
@@ -108,8 +108,8 @@ window.showAdminShopsView = (categoryId, categoryName) => {
       <td>${escHtml((shop.Category ? i18n[currentLang].cat[shop.Category.slug] || shop.Category.name : null) || shop.category || shop.categorySlug || '–')}</td>
       <td>
         <div class="action-btns">
-          <button class="btn-edit" onclick="editShop(${shop.id})">✏️ Редактировать</button>
-          <button class="btn-delete" onclick="deleteShop(${shop.id}, '${escHtml(shop.name)}')">🗑️ Удалить</button>
+          <button class="btn-edit" onclick="editShop(${shop.id})">${t('edit')}</button>
+          <button class="btn-delete" onclick="deleteShop(${shop.id}, '${escHtml(shop.name)}')">${t('delete')}</button>
         </div>
       </td>
     </tr>

@@ -33,7 +33,7 @@ function openShopForm(shop = null) {
   // Setup Categories
   const catSelect = document.getElementById('fCategory');
   if (catSelect) {
-      catSelect.innerHTML = '<option value="">Выберите...</option>' + window._adminCategories.map(c => 
+      catSelect.innerHTML = `<option value="">${t('selectOption')}</option>` + window._adminCategories.map(c =>
           `<option value="${c.id}">${escHtml(i18n.ru.cat[c.slug] || c.name)}</option>`
       ).join('');
       catSelect.value = shop?.CategoryId || '';
@@ -46,7 +46,7 @@ function openShopForm(shop = null) {
   } else {
       const subSelect = document.getElementById('fSubCategory');
       if (subSelect) {
-          subSelect.innerHTML = '<span class="sub-pill-msg">Выберите категорию...</span>';
+          subSelect.innerHTML = `<span class="sub-pill-msg">${t('selectCategory')}</span>`;
           subSelect.style.borderColor = ''; // reset any validation errors
           subSelect.style.border = 'none';
       }
@@ -59,13 +59,13 @@ function openShopForm(shop = null) {
           dropZone.innerHTML = `<img src="${escHtml(shop.logoUrl)}" alt="Logo">
                                 <input type="file" id="fLogoFile" accept="image/png, image/jpeg, image/svg+xml">`;
       } else {
-          dropZone.innerHTML = `<span id="logoDropText">📁 Перетащите логотип сюда или нажмите</span>
+          dropZone.innerHTML = `<span id="logoDropText">${t('dropLogo')}</span>
                                 <input type="file" id="fLogoFile" accept="image/png, image/jpeg, image/svg+xml">`;
       }
       _initDropZoneUI();
   }
 
-  title.textContent = shop ? 'Редактировать магазин' : 'Добавить магазин';
+  title.textContent = shop ? t('editShopTitle') : t('addShopTitle');
   overlay.style.display = 'flex';
   document.body.style.overflow = 'hidden';
 
@@ -97,11 +97,11 @@ window.addCustomLinkRow = (label = '', url = '') => {
   
   row.innerHTML = `
     <div class="form-row" style="margin: 0;">
-        <label style="font-size: 11px;">Название (YouTube, TikTok...)</label>
+        <label style="font-size: 11px;">${t('linkLabel')}</label>
         <input type="text" class="cl-label" placeholder="YouTube" value="${escHtml(label)}">
     </div>
     <div class="form-row" style="margin: 0;">
-        <label style="font-size: 11px;">Ссылка</label>
+        <label style="font-size: 11px;">${t('linkUrl')}</label>
         <input type="url" class="cl-url" placeholder="https://..." value="${escHtml(url)}">
     </div>
     <button type="button" class="btn-cancel" onclick="this.parentElement.remove()" style="padding: 10px; border-radius: 8px; flex-shrink: 0; display: flex; align-items: center; justify-content: center;" title="Удалить">
@@ -120,13 +120,13 @@ async function saveShop() {
   const subCategoryIds = activePills.map(opt => opt.getAttribute('data-value')).filter(val => val);
 
   if (!name) {
-    showToast('❗ Название - обязательное поле', 'error');
+    showToast(t('nameRequired'), 'error');
     document.getElementById('fName').focus();
     return;
   }
 
   if (!categoryId) {
-    showToast('❗ Категория - обязательное поле', 'error');
+    showToast(t('catRequired'), 'error');
     document.getElementById('fCategory').style.borderColor = 'red';
     document.getElementById('fCategory').focus();
     return;
@@ -136,7 +136,7 @@ async function saveShop() {
   
   const hasPills = subCategorySelect.querySelectorAll('.sub-pill').length > 0;
   if (categoryId && hasPills && subCategoryIds.length === 0) {
-    showToast('❗ Подкатегория - обязательное поле', 'error');
+    showToast(t('subCatRequired'), 'error');
     subCategorySelect.style.border = '1px solid red';
     subCategorySelect.style.borderRadius = 'var(--radius-sm)';
     return;
@@ -150,7 +150,7 @@ async function saveShop() {
     const label = linkRows[i].querySelector('.cl-label').value.trim();
     const url = linkRows[i].querySelector('.cl-url').value.trim();
     if (label && !url || !label && url) {
-        showToast('❗ Заполните оба поля (Название и Ссылка) для всех дополнительных ссылок', 'error');
+        showToast(t('fillBothFields'), 'error');
         return;
     }
     if (label && url) {
@@ -179,7 +179,7 @@ async function saveShop() {
   const method = isEdit ? 'PUT' : 'POST';
 
   const btn = document.querySelector('.btn-save');
-  btn.textContent = 'Сохранение…';
+  btn.textContent = t('saving');
   btn.disabled = true;
 
   try {
@@ -195,27 +195,27 @@ async function saveShop() {
     if (handle401(res)) return;
     if (!res.ok) throw new Error(await res.text());
 
-    showToast(isEdit ? '✅ Успешно обновлено' : '✅ Магазин добавлен', 'success');
+    showToast(isEdit ? t('updated') : t('shopAdded'), 'success');
     closeShopForm();
     await adminLoadShops();
 
     if (_currentAdminCategoryId) {
         const cat = window._adminCategories.find(c => c.id === _currentAdminCategoryId);
-        const cName = cat ? (i18n.ru.cat[cat.slug] || cat.name) : 'Магазины';
+        const cName = cat ? (i18n[currentLang].cat[cat.slug] || cat.name) : t('shops');
         showAdminShopsView(_currentAdminCategoryId, cName);
     } else {
         renderAdminCategories();
     }
   } catch (err) {
-    showToast('❌ Произошла ошибка: ' + err.message, 'error');
+    showToast(t('saveFailed') + err.message, 'error');
   } finally {
-    btn.textContent = 'Сохранить';
+    btn.textContent = t('save');
     btn.disabled = false;
   }
 }
 
 async function deleteShop(shopId, name) {
-  if (!confirm(`Вы уверены, что хотите удалить магазин "${name}"?`)) return;
+  if (!confirm(`${t('delete')} "${name}"?`)) return;
 
   try {
     const res = await fetch(`${API}/api/shops/${shopId}`, { 
@@ -224,19 +224,19 @@ async function deleteShop(shopId, name) {
     });
     if (handle401(res)) return;
     if (!res.ok) throw new Error('Delete failed');
-    showToast('🗑️ Магазин удален', 'success');
+    showToast(t('shopDeleted'), 'success');
     
     _adminShops = _adminShops.filter(s => s.id !== shopId);
     
     if (_currentAdminCategoryId) {
         const cat = window._adminCategories.find(c => c.id === _currentAdminCategoryId);
-        const cName = cat ? (i18n.ru.cat[cat.slug] || cat.name) : 'Магазины';
+        const cName = cat ? (i18n[currentLang].cat[cat.slug] || cat.name) : t('shops');
         showAdminShopsView(_currentAdminCategoryId, cName);
     } else {
         renderAdminCategories();
     }
   } catch {
-    showToast('❌ Ошибка при удалении', 'error');
+    showToast(t('deleteFailed'), 'error');
   }
 }
 
@@ -245,13 +245,13 @@ window.adminCategoryChanged = (categoryId, selectedSubIds = []) => {
     if (!subSelect) return;
 
     if (!categoryId) {
-        subSelect.innerHTML = '<span class="sub-pill-msg">Выберите категорию...</span>';
+        subSelect.innerHTML = `<span class="sub-pill-msg">${t('selectCategory')}</span>`;
         return;
     }
 
     const filtered = (window._adminSubCategories || []).filter(sc => String(sc.CategoryId) === String(categoryId));
     if (filtered.length === 0) {
-        subSelect.innerHTML = '<span class="sub-pill-msg">В этой категории нет подкатегорий</span>';
+        subSelect.innerHTML = `<span class="sub-pill-msg">${t('noSubcats')}</span>`;
     } else {
         const getRuName = (sc) => {
             return sc.name_ru || sc.name; // prefer Russian name if available
@@ -287,16 +287,16 @@ function _initDropZoneUI() {
 
 window._handleLogoUpload = async (file) => {
     if (!file.type.startsWith('image/')) {
-        showToast('❗ Можно загружать только изображения', 'error');
+        showToast(t('onlyImages'), 'error');
         return;
     }
     if (file.size > 2 * 1024 * 1024) {
-        showToast('❗ Размер изображения должен быть меньше 2МБ', 'error');
+        showToast(t('imageTooLarge'), 'error');
         return;
     }
 
     const dropZone = document.getElementById('logoDropZone');
-    dropZone.innerHTML = `<span id="logoDropText">⏳ Загрузка...</span>`;
+    dropZone.innerHTML = `<span id="logoDropText">${t('uploading')}</span>`;
 
     const formData = new FormData();
     formData.append('image', file);
@@ -319,10 +319,10 @@ window._handleLogoUpload = async (file) => {
         dropZone.innerHTML = `<img src="${imgUrl}" alt="Preview">
                               <input type="file" id="fLogoFile" accept="image/png, image/jpeg, image/svg+xml">`;
         _initDropZoneUI(); 
-        showToast('🖼️ Логотип загружен!', 'success');
+        showToast(t('logoUploaded'), 'success');
     } catch (err) {
-        showToast('❌ Ошибка при загрузке: ' + err.message, 'error');
-        dropZone.innerHTML = `<span id="logoDropText">❌ Ошибка. Попробуйте снова.</span>
+        showToast(t('uploadFailed') + err.message, 'error');
+        dropZone.innerHTML = `<span id="logoDropText">${t('uploadError')}</span>
                               <input type="file" id="fLogoFile" accept="image/png, image/jpeg, image/svg+xml">`;
         _initDropZoneUI();
     }

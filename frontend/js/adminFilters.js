@@ -7,7 +7,7 @@ window.showFiltersView = (categoryId, categoryName) => {
     const filtersView = document.getElementById('adminFiltersView');
     filtersView.style.display = 'block';
     
-    document.getElementById('adminFiltersTitle').textContent = `Фильтры: ${categoryName}`;
+    document.getElementById('adminFiltersTitle').textContent = t('filtersTitle') + categoryName;
     
     renderAdminFilters();
 };
@@ -20,7 +20,7 @@ window.renderAdminFilters = () => {
     subCats.sort((a,b) => (a.order||0) - (b.order||0));
 
     if (subCats.length === 0) {
-        container.innerHTML = `<div style="text-align:center;color:var(--text3);padding:40px">Дополнительных фильтров пока нет.</div>`;
+        container.innerHTML = `<div style="text-align:center;color:var(--text3);padding:40px">${t('noFilters')}</div>`;
         return;
     }
 
@@ -36,7 +36,7 @@ window.renderAdminFilters = () => {
                     <span style="font-size: 11px; color: var(--text3)">ID: ${sc.id} • Slug: ${escHtml(sc.slug)}</span>
                 </div>
             </div>
-            <button class="btn-delete" onclick="deleteFilter(${sc.id}, '${escHtml(sc.name)}')">🗑️ Удалить</button>
+            <button class="btn-delete" onclick="deleteFilter(${sc.id}, '${escHtml(sc.name)}')">${t('delete')}</button>
         </div>
     `).join('');
 };
@@ -72,15 +72,15 @@ window.addFilterPrompt = async () => {
         
         const newCat = await res.json();
         window._adminSubCategories.push(newCat.data);
-        showToast('✅ Фильтр добавлен', 'success');
+        showToast(t('filterAdded'), 'success');
         renderAdminFilters();
     } catch (e) {
-        showToast('❌ Ошибка добавления', 'error');
+        showToast(t('addFilterError'), 'error');
     }
 };
 
 window.deleteFilter = async (id, name) => {
-    if(!confirm(`Удалить фильтр "${name}"? Связи с магазинами будут разорваны.`)) return;
+    if(!confirm(`${t('delete')} "${name}"?`)) return;
 
     try {
         const res = await fetch(`${API}/api/subcategories/${id}`, {
@@ -92,10 +92,10 @@ window.deleteFilter = async (id, name) => {
         if (!res.ok) throw new Error('Deletion failed');
 
         window._adminSubCategories = window._adminSubCategories.filter(sc => sc.id !== id);
-        showToast('🗑️ Фильтр удален', 'success');
+        showToast(t('filterDeleted'), 'success');
         renderAdminFilters();
     } catch {
-        showToast('❌ Ошибка удаления', 'error');
+        showToast(t('deleteFilterError'), 'error');
     }
 };
 
@@ -139,6 +139,6 @@ window.moveFilter = async (id, direction) => {
         if (handle401(res)) return;
         if (!res.ok) throw new Error('Reorder failed');
     } catch(e) {
-        showToast('❌ Ошибка синхронизации порядка', 'error');
+        showToast(t('reorderError'), 'error');
     }
 };
