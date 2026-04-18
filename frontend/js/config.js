@@ -1,6 +1,6 @@
 const API = '';          // same origin — backend serves frontend statically
 const TOKEN_KEY = 'houz_token';
-let currentLang = localStorage.getItem('houz_lang') || 'uz';
+let currentLang = localStorage.getItem('houz_lang_v2') || 'ru';
 
 const i18n = {
   uz: {
@@ -69,7 +69,7 @@ function getCatName(slug) {
 
 function switchLang(lang) {
   currentLang = lang;
-  localStorage.setItem('houz_lang', lang);
+  localStorage.setItem('houz_lang_v2', lang);
   location.reload(); 
 }
 
