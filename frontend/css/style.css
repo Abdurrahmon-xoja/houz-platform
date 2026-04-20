@@ -569,7 +569,7 @@ select {
 
 .shop-location {
     font-size: 12px;
-    color: var(--text2);
+    color: #2563eb;
     display: flex;
     align-items: center;
     gap: 4px;
