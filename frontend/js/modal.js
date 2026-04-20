@@ -8,7 +8,7 @@ function openShopModal(shopId) {
     // Info Column
     document.getElementById('modalName').textContent = shop.name;
   
-    const desc = currentLang === 'ru' ? (shop.description_ru || shop.description) : shop.description;
+    const desc = getLocalizedText(shop, 'description_ru', 'description');
     document.getElementById('modalDescFull').textContent = desc || t('descPlaceholder');
   
     document.getElementById('modalLocText').textContent = shop.location || t('locPlaceholder');
@@ -60,7 +60,7 @@ function openShopModal(shopId) {
             <span class="modal-row-text">${escHtml(link.label)}</span>
           </div>`);
         });
-      } catch(e) { console.error('Error parsing custom links for modal', e); }
+      } catch(e) { showToast(t('copyError'), 'error'); }
     }
     if (shop.website) {
       const host = new URL(shop.website).hostname.replace('www.','');
@@ -115,9 +115,9 @@ function openShopModal(shopId) {
             // Fallback for desktop or unsupported browsers
             try {
                 await navigator.clipboard.writeText(shareUrl);
-                showToast(currentLang === 'ru' ? 'Ссылка скопирована' : 'Havola nusxalandi', 'success');
+                showToast(t('linkCopied'), 'success');
             } catch (err) {
-                showToast(currentLang === 'ru' ? 'Ошибка' : 'Xatolik yuz berdi', 'error');
+                showToast(t('copyError'), 'error');
             }
         }
       };

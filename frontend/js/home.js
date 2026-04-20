@@ -60,11 +60,8 @@ async function loadCategoriesHome() {
       </a>
     `).join('');
 
-    // Double rAF ensures browser paints hidden state before transition fires
     requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-            grid.querySelectorAll('.home-card-hidden').forEach(el => el.classList.remove('home-card-hidden'));
-        });
+        grid.querySelectorAll('.home-card-hidden').forEach(el => el.classList.remove('home-card-hidden'));
     });
     
     // Update header badge if present

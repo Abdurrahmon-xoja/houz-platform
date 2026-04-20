@@ -218,9 +218,7 @@ function renderShops(shops) {
   }).join('');
 
   requestAnimationFrame(() => {
-    requestAnimationFrame(() => {
-      grid.querySelectorAll('.market-card-hidden').forEach(el => el.classList.remove('market-card-hidden'));
-    });
+    grid.querySelectorAll('.market-card-hidden').forEach(el => el.classList.remove('market-card-hidden'));
   });
 }
 

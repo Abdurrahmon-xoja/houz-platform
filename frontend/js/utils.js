@@ -30,6 +30,11 @@ const letter = (name || '?').charAt(0).toUpperCase();
 return `<span style="font-size:22px;font-weight:800;color:var(--accent)">${letter}</span>`;
 }
 
+function getLocalizedText(shop, ruField, defaultField) {
+    if (currentLang === 'ru') return shop[ruField] || shop[defaultField] || '';
+    return shop[defaultField] || shop[ruField] || '';
+}
+
 function goExternal(url) {
     if (url) window.open(url, '_blank', 'noopener noreferrer');
 }
