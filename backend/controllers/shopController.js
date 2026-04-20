@@ -18,10 +18,14 @@ exports.getAllShops = async (req, res) => {
             include: [
                 { model: SubCategory, through: { attributes: [] } },
                 { model: Category, attributes: ['id', 'name', 'slug', 'icon'] }
-            ],
-            order: [['createdAt', 'DESC']]
+            ]
         });
-        
+
+        for (let i = shops.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [shops[i], shops[j]] = [shops[j], shops[i]];
+        }
+
         res.json({ success: true, data: shops });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });
