@@ -18,11 +18,11 @@ function openShopModal(shopId) {
     if (locEl) {
       if (shop.locationLink) {
         locEl.style.cursor = 'pointer';
-        locEl.style.textDecoration = 'underline';
+        locEl.style.textDecoration = 'none';
         locEl.onclick = () => goExternal(shop.locationLink);
       } else if (shop.location) {
         locEl.style.cursor = 'pointer';
-        locEl.style.textDecoration = 'underline';
+        locEl.style.textDecoration = 'none';
         locEl.onclick = () => goExternal(`https://maps.google.com/?q=${encodeURIComponent(shop.location)}`);
       } else {
         locEl.style.cursor = '';

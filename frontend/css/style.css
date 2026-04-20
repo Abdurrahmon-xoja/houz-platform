@@ -824,14 +824,19 @@ select {
     justify-content: center;
     gap: 8px;
     font-size: 13px;
-    color: var(--text2);
-    background: var(--surface);
-    border: 1px solid var(--border);
+    color: #fff;
+    background: #0095f6;
+    border: none;
     padding: 10px 18px;
     border-radius: 40px;
     text-align: center;
     margin-bottom: 24px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(0, 149, 246, 0.25);
+}
+
+.modal-shop-loc .modal-loc-icon {
+    filter: brightness(0) invert(1);
 }
 
 .modal-loc-icon {
