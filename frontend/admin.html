@@ -230,6 +230,15 @@
                     <label for="fDescriptionRu">Описание (RU)</label>
                     <textarea id="fDescriptionRu" placeholder="Краткая информация о магазине…"></textarea>
                 </div>
+
+                <div class="form-row" id="gallerySection" style="grid-column: 1 / -1; display: none;">
+                    <label>Фото галерея (макс. 3 фото, квадратные)</label>
+                    <div id="galleryImagesList"></div>
+                    <label id="galleryAddBtn" style="cursor: pointer; display: inline-flex; align-items: center; gap: 6px; font-size: 13px; padding: 8px 14px; background: transparent; border: 1px dashed var(--border2); border-radius: 8px; color: var(--text2);">
+                        + Добавить фото
+                        <input type="file" id="galleryFileInput" accept="image/png,image/jpeg,image/webp" style="display: none;">
+                    </label>
+                </div>
             </div>
 
             <div class="form-modal-btns">

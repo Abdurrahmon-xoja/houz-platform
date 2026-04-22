@@ -8,10 +8,14 @@ const Shop = require('./Shop')(sequelize, DataTypes);
 const Category = require('./Category')(sequelize, DataTypes);
 const SubCategory = require('./SubCategory')(sequelize, DataTypes);
 const Product = require('./Product')(sequelize, DataTypes);
+const ShopImage = require('./ShopImage')(sequelize, DataTypes);
 
 // Associations
 Shop.hasMany(Product);
 Product.belongsTo(Shop);
+
+Shop.hasMany(ShopImage, { onDelete: 'CASCADE' });
+ShopImage.belongsTo(Shop);
 
 Category.hasMany(Product);
 Product.belongsTo(Category);

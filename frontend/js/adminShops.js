@@ -1,3 +1,104 @@
+let _editingShopId = null;
+let _galleryImages = [];
+
+function _renderGalleryImages() {
+  const section = document.getElementById('gallerySection');
+  const list = document.getElementById('galleryImagesList');
+  const addBtn = document.getElementById('galleryAddBtn');
+  if (!section || !list || !addBtn) return;
+
+  if (!_editingShopId) {
+    section.style.display = 'none';
+    return;
+  }
+  section.style.display = '';
+
+  list.innerHTML = _galleryImages.map((img, i) => `
+    <div class="gallery-img-item">
+      <img src="${escHtml(img.url)}" alt="Фото ${i + 1}">
+      <div class="gallery-img-controls">
+        <button type="button" title="Влево" ${i === 0 ? 'disabled style="opacity:0.3"' : ''} onclick="_moveGalleryImage(${img.id}, 'prev')">←</button>
+        <button type="button" title="Вправо" ${i === _galleryImages.length - 1 ? 'disabled style="opacity:0.3"' : ''} onclick="_moveGalleryImage(${img.id}, 'next')">→</button>
+        <button type="button" class="gallery-del-btn" title="Удалить" onclick="_deleteGalleryImage(${img.id})">✕</button>
+      </div>
+    </div>
+  `).join('');
+
+  addBtn.style.display = _galleryImages.length >= 3 ? 'none' : '';
+}
+
+window._handleGalleryUpload = async (file) => {
+  if (!file.type.startsWith('image/')) { showToast(t('onlyImages'), 'error'); return; }
+  if (file.size > 5 * 1024 * 1024) { showToast(t('imageTooLarge'), 'error'); return; }
+  if (_galleryImages.length >= 3) { showToast('Максимум 3 фото', 'error'); return; }
+
+  const addBtn = document.getElementById('galleryAddBtn');
+  if (addBtn) addBtn.style.opacity = '0.5';
+
+  const formData = new FormData();
+  formData.append('image', file);
+
+  try {
+    const res = await fetch(`${API}/api/shops/${_editingShopId}/images`, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${localStorage.getItem(TOKEN_KEY)}` },
+      body: formData
+    });
+    if (handle401(res)) return;
+    if (!res.ok) throw new Error(await res.text());
+    const json = await res.json();
+    if (!json.success) throw new Error(json.message);
+    _galleryImages.push(json.data);
+    _renderGalleryImages();
+    showToast('Фото добавлено', 'success');
+  } catch (err) {
+    showToast('Ошибка загрузки: ' + err.message, 'error');
+  } finally {
+    if (addBtn) addBtn.style.opacity = '';
+    const input = document.getElementById('galleryFileInput');
+    if (input) input.value = '';
+  }
+};
+
+window._deleteGalleryImage = async (imageId) => {
+  if (!confirm('Удалить фото?')) return;
+  try {
+    const res = await fetch(`${API}/api/shops/${_editingShopId}/images/${imageId}`, {
+      method: 'DELETE',
+      headers: { 'Authorization': `Bearer ${localStorage.getItem(TOKEN_KEY)}` }
+    });
+    if (handle401(res)) return;
+    if (!res.ok) throw new Error('Delete failed');
+    _galleryImages = _galleryImages.filter(img => img.id !== imageId);
+    _galleryImages.forEach((img, i) => { img.order = i; });
+    _renderGalleryImages();
+  } catch (err) {
+    showToast('Ошибка удаления', 'error');
+  }
+};
+
+window._moveGalleryImage = async (imageId, direction) => {
+  const idx = _galleryImages.findIndex(img => img.id === imageId);
+  if (idx === -1) return;
+  const newIdx = direction === 'prev' ? idx - 1 : idx + 1;
+  if (newIdx < 0 || newIdx >= _galleryImages.length) return;
+
+  [_galleryImages[idx], _galleryImages[newIdx]] = [_galleryImages[newIdx], _galleryImages[idx]];
+  _galleryImages.forEach((img, i) => { img.order = i; });
+  _renderGalleryImages();
+
+  try {
+    await fetch(`${API}/api/shops/${_editingShopId}/images/reorder`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem(TOKEN_KEY)}`
+      },
+      body: JSON.stringify({ ids: _galleryImages.map(img => img.id) })
+    });
+  } catch (e) {}
+};
+
 function openShopForm(shop = null) {
   const overlay = document.getElementById('shopFormOverlay');
   const title = document.getElementById('formTitle');
@@ -63,6 +164,17 @@ function openShopForm(shop = null) {
                                 <input type="file" id="fLogoFile" accept="image/png, image/jpeg, image/svg+xml">`;
       }
       _initDropZoneUI();
+  }
+
+  // Gallery images
+  _editingShopId = shop?.id || null;
+  _galleryImages = shop?.ShopImages
+    ? [...shop.ShopImages].sort((a, b) => a.order - b.order)
+    : [];
+  _renderGalleryImages();
+  const galleryInput = document.getElementById('galleryFileInput');
+  if (galleryInput) {
+    galleryInput.onchange = e => { if (e.target.files[0]) window._handleGalleryUpload(e.target.files[0]); };
   }
 
   title.textContent = shop ? t('editShopTitle') : t('addShopTitle');

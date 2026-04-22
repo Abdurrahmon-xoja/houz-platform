@@ -2395,3 +2395,116 @@ body {
         color: revert !important;
     }
 }
+
+/* ─── Shop Image Carousel ────────────────────────────────── */
+.shop-carousel {
+    display: none;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    border-radius: var(--radius);
+    overflow: hidden;
+    position: relative;
+    margin-bottom: 20px;
+    background: var(--surface2);
+}
+
+.carousel-inner {
+    display: flex;
+    height: 100%;
+    transition: transform 0.4s cubic-bezier(.4, 0, .2, 1);
+    will-change: transform;
+}
+
+.carousel-slide {
+    flex: 0 0 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.carousel-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    user-select: none;
+    -webkit-user-drag: none;
+}
+
+.carousel-dots {
+    position: absolute;
+    bottom: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 6px;
+    z-index: 2;
+}
+
+.carousel-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.5);
+    transition: background 0.25s, transform 0.25s;
+    cursor: default;
+}
+
+.carousel-dot.active {
+    background: #ffffff;
+    transform: scale(1.35);
+}
+
+/* ─── Admin Gallery Images ───────────────────────────────── */
+#galleryImagesList {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    min-height: 20px;
+    margin-bottom: 10px;
+}
+
+.gallery-img-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+}
+
+.gallery-img-item img {
+    width: 90px;
+    height: 90px;
+    object-fit: cover;
+    border-radius: var(--radius-sm);
+    display: block;
+    border: 1px solid var(--border);
+}
+
+.gallery-img-controls {
+    display: flex;
+    gap: 4px;
+}
+
+.gallery-img-controls button {
+    width: 26px;
+    height: 26px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text2);
+    cursor: pointer;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    transition: background 0.15s;
+}
+
+.gallery-img-controls button:hover {
+    background: var(--surface2);
+}
+
+.gallery-img-controls .gallery-del-btn {
+    color: var(--red);
+    border-color: rgba(255, 59, 48, 0.2);
+}

@@ -1,16 +1,69 @@
+let _carouselTimer = null;
+let _carouselIdx = 0;
+let _carouselCount = 0;
+
+function _buildCarousel(images) {
+    _stopCarousel();
+    const el = document.getElementById('shopCarousel');
+    if (!el) return;
+
+    const sorted = [...images].sort((a, b) => a.order - b.order);
+
+    if (!sorted.length) {
+        el.innerHTML = '';
+        el.style.display = 'none';
+        return;
+    }
+
+    _carouselCount = sorted.length;
+    _carouselIdx = 0;
+
+    const slides = sorted.map((img, i) =>
+        `<div class="carousel-slide"><img src="${escHtml(img.url)}" alt="Фото ${i + 1}" loading="lazy"></div>`
+    ).join('');
+
+    const dots = sorted.length > 1
+        ? `<div class="carousel-dots">${sorted.map((_, i) =>
+            `<span class="carousel-dot${i === 0 ? ' active' : ''}"></span>`
+          ).join('')}</div>`
+        : '';
+
+    el.innerHTML = `<div class="carousel-inner" id="carouselInner">${slides}</div>${dots}`;
+    el.style.display = 'block';
+
+    if (sorted.length > 1) {
+        _carouselTimer = setInterval(() => {
+            _carouselIdx = (_carouselIdx + 1) % _carouselCount;
+            _goToSlide(_carouselIdx);
+        }, 3000);
+    }
+}
+
+function _goToSlide(idx) {
+    const inner = document.getElementById('carouselInner');
+    if (inner) inner.style.transform = `translateX(-${idx * 100}%)`;
+    document.querySelectorAll('.carousel-dot').forEach((d, i) => d.classList.toggle('active', i === idx));
+}
+
+function _stopCarousel() {
+    if (_carouselTimer) { clearInterval(_carouselTimer); _carouselTimer = null; }
+    _carouselIdx = 0;
+    _carouselCount = 0;
+}
+
 function openShopModal(shopId) {
     const shop = _allShops.find(s => s.id === shopId);
     if (!shop) return;
-  
+
     // Logo
     document.getElementById('modalLogo').innerHTML = logoFallback(shop.logoUrl, shop.name);
-  
+
     // Info Column
     document.getElementById('modalName').textContent = shop.name;
-  
+
     const desc = getLocalizedText(shop, 'description_ru', 'description');
     document.getElementById('modalDescFull').textContent = desc || t('descPlaceholder');
-  
+
     document.getElementById('modalLocText').textContent = shop.location || t('locPlaceholder');
 
     // Make location clickable if a map link exists
@@ -75,15 +128,17 @@ function openShopModal(shopId) {
         <span class="modal-row-text">${escHtml(shop.phone)}</span>
       </div>`);
     }
-  
+
     document.getElementById('modalRows').innerHTML = rows.join('');
-  
+
+    // Carousel
+    _buildCarousel(shop.ShopImages || []);
+
     // Primary buttons
     const shareBtn = document.getElementById('modalShareBtn');
     const dirBtn = document.getElementById('modalDirectionsBtn');
-  
+
     if (shareBtn) {
-      // Keep icon but update text
       shareBtn.innerHTML = `
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
@@ -97,7 +152,7 @@ function openShopModal(shopId) {
         const shareUrl = `${window.location.origin}${window.location.pathname}?category=${shareCat}&shop=${shop.id}`;
         const shopTitle = shop.name;
         const shopText = shop.name;
-        
+
         if (navigator.share) {
             try {
                 await navigator.share({
@@ -106,13 +161,11 @@ function openShopModal(shopId) {
                     url: shareUrl
                 });
             } catch (err) {
-                // Ignore AbortError when user dismisses the share sheet
                 if (err.name !== 'AbortError') {
                     console.error('Share error', err);
                 }
             }
         } else {
-            // Fallback for desktop or unsupported browsers
             try {
                 await navigator.clipboard.writeText(shareUrl);
                 showToast(t('linkCopied'), 'success');
@@ -122,24 +175,25 @@ function openShopModal(shopId) {
         }
       };
     }
-  
+
     if (dirBtn) {
       dirBtn.style.display = 'none';
     }
-  
+
     const overlay = document.getElementById('shopModal');
     if (overlay) {
         overlay.style.display = 'flex';
         document.body.style.overflow = 'hidden';
     }
 }
-  
+
 function closeShopModal() {
+    _stopCarousel();
     const overlay = document.getElementById('shopModal');
     if (overlay) overlay.style.display = 'none';
     document.body.style.overflow = '';
 }
-  
+
 // Close with Escape key
 document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
