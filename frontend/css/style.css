@@ -793,7 +793,7 @@ select {
     flex-direction: column;
     align-items: center;
     text-align: center;
-    padding-top: 8px;
+    padding-top: 16px;
 }
 
 .modal-logo {
