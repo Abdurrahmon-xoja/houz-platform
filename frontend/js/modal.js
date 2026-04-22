@@ -36,7 +36,39 @@ function _buildCarousel(images) {
             _carouselIdx = (_carouselIdx + 1) % _carouselCount;
             _goToSlide(_carouselIdx);
         }, 3000);
+
+        _initCarouselSwipe(el);
     }
+}
+
+function _initCarouselSwipe(el) {
+    let touchStartX = 0;
+    let touchStartY = 0;
+
+    el.addEventListener('touchstart', e => {
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+    }, { passive: true });
+
+    el.addEventListener('touchend', e => {
+        const dx = e.changedTouches[0].clientX - touchStartX;
+        const dy = e.changedTouches[0].clientY - touchStartY;
+        if (Math.abs(dx) < 30 || Math.abs(dx) < Math.abs(dy)) return;
+
+        if (_carouselTimer) { clearInterval(_carouselTimer); _carouselTimer = null; }
+
+        if (dx < 0) {
+            _carouselIdx = (_carouselIdx + 1) % _carouselCount;
+        } else {
+            _carouselIdx = (_carouselIdx - 1 + _carouselCount) % _carouselCount;
+        }
+        _goToSlide(_carouselIdx);
+
+        _carouselTimer = setInterval(() => {
+            _carouselIdx = (_carouselIdx + 1) % _carouselCount;
+            _goToSlide(_carouselIdx);
+        }, 3000);
+    }, { passive: true });
 }
 
 function _goToSlide(idx) {
