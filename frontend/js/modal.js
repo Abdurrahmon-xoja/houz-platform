@@ -42,33 +42,44 @@ function _buildCarousel(images) {
 }
 
 function _initCarouselSwipe(el) {
-    let touchStartX = 0;
-    let touchStartY = 0;
+    let startX = 0;
+    let startY = 0;
+    let isDragging = false;
 
-    el.addEventListener('touchstart', e => {
-        touchStartX = e.touches[0].clientX;
-        touchStartY = e.touches[0].clientY;
-    }, { passive: true });
+    function onStart(x, y) {
+        startX = x;
+        startY = y;
+        isDragging = true;
+    }
 
-    el.addEventListener('touchend', e => {
-        const dx = e.changedTouches[0].clientX - touchStartX;
-        const dy = e.changedTouches[0].clientY - touchStartY;
+    function onEnd(x, y) {
+        if (!isDragging) return;
+        isDragging = false;
+        const dx = x - startX;
+        const dy = y - startY;
         if (Math.abs(dx) < 30 || Math.abs(dx) < Math.abs(dy)) return;
 
         if (_carouselTimer) { clearInterval(_carouselTimer); _carouselTimer = null; }
-
-        if (dx < 0) {
-            _carouselIdx = (_carouselIdx + 1) % _carouselCount;
-        } else {
-            _carouselIdx = (_carouselIdx - 1 + _carouselCount) % _carouselCount;
-        }
+        _carouselIdx = dx < 0
+            ? (_carouselIdx + 1) % _carouselCount
+            : (_carouselIdx - 1 + _carouselCount) % _carouselCount;
         _goToSlide(_carouselIdx);
 
         _carouselTimer = setInterval(() => {
             _carouselIdx = (_carouselIdx + 1) % _carouselCount;
             _goToSlide(_carouselIdx);
         }, 3000);
-    }, { passive: true });
+    }
+
+    // Touch
+    el.addEventListener('touchstart', e => onStart(e.touches[0].clientX, e.touches[0].clientY), { passive: true });
+    el.addEventListener('touchend',   e => onEnd(e.changedTouches[0].clientX, e.changedTouches[0].clientY), { passive: true });
+
+    // Mouse
+    el.addEventListener('mousedown', e => { onStart(e.clientX, e.clientY); el.style.cursor = 'grabbing'; });
+    el.addEventListener('mouseup',   e => { onEnd(e.clientX, e.clientY);   el.style.cursor = 'grab'; });
+    el.addEventListener('mouseleave',e => { isDragging = false;             el.style.cursor = 'grab'; });
+    el.style.cursor = 'grab';
 }
 
 function _goToSlide(idx) {
