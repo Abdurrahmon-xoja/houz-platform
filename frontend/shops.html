@@ -78,54 +78,58 @@
     <!-- Shop Detail Modal -->
     <div class="modal-overlay" id="shopModal" style="display:none;" role="dialog" aria-modal="true">
         <div class="modal-sheet" id="modalSheet">
-            <button class="modal-close" id="modalClose" aria-label="Yopish">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                    stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="18" y1="6" x2="6" y2="18"></line>
-                    <line x1="6" y1="6" x2="18" y2="18"></line>
-                </svg>
-            </button>
+            <div class="modal-header">
+                <button class="modal-close" id="modalClose" aria-label="Yopish">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
 
-            <div class="modal-content-grid">
-                <!-- Left/Top Section: Logo & Info -->
-                <div class="modal-info-col">
-                    <div class="modal-logo" id="modalLogo">🏪</div>
-                    <h2 class="modal-shop-name" id="modalName">–</h2>
-                    <p class="modal-shop-desc" id="modalDescFull">Bu do'kon haqida ma'lumot...</p>
+            <div class="modal-body">
+                <div class="modal-content-grid">
+                    <!-- Left/Top Section: Logo & Info -->
+                    <div class="modal-info-col">
+                        <div class="modal-logo" id="modalLogo">🏪</div>
+                        <h2 class="modal-shop-name" id="modalName">–</h2>
+                        <p class="modal-shop-desc" id="modalDescFull">Bu do'kon haqida ma'lumot...</p>
 
-                    <div class="modal-shop-loc" id="modalLoc">
-                        <img src="img/icons/Location icon.svg" alt="Location" class="modal-loc-icon">
-                        <span id="modalLocText">–</span>
+                        <div class="modal-shop-loc" id="modalLoc">
+                            <img src="img/icons/Location icon.svg" alt="Location" class="modal-loc-icon">
+                            <span id="modalLocText">–</span>
+                        </div>
+                    </div>
+
+                    <!-- Right/Bottom Section: Links & Contacts -->
+                    <div class="modal-links-col">
+                        <div class="modal-rows" id="modalRows"></div>
                     </div>
                 </div>
 
-                <!-- Right/Bottom Section: Links & Contacts -->
-                <div class="modal-links-col">
-                    <div class="modal-rows" id="modalRows"></div>
+                <!-- Image Carousel -->
+                <div class="shop-carousel" id="shopCarousel"></div>
+
+                <!-- Bottom Buttons -->
+                <div class="modal-btns">
+                    <button class="btn-modal-share" id="modalShareBtn">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
+                            <polyline points="16 6 12 2 8 6"></polyline>
+                            <line x1="12" y1="2" x2="12" y2="15"></line>
+                        </svg>
+                        Ulashish
+                    </button>
+                    <button class="btn-modal-primary" id="modalDirectionsBtn">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="3 11 22 2 13 21 11 13 3 11"></polygon>
+                        </svg>
+                        Yo'nalish
+                    </button>
                 </div>
-            </div>
-
-            <!-- Image Carousel -->
-            <div class="shop-carousel" id="shopCarousel"></div>
-
-            <!-- Bottom Buttons -->
-            <div class="modal-btns">
-                <button class="btn-modal-share" id="modalShareBtn">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                        stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
-                        <polyline points="16 6 12 2 8 6"></polyline>
-                        <line x1="12" y1="2" x2="12" y2="15"></line>
-                    </svg>
-                    Ulashish
-                </button>
-                <button class="btn-modal-primary" id="modalDirectionsBtn">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                        stroke-linecap="round" stroke-linejoin="round">
-                        <polygon points="3 11 22 2 13 21 11 13 3 11"></polygon>
-                    </svg>
-                    Yo'nalish
-                </button>
             </div>
         </div>
     </div>
