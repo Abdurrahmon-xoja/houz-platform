@@ -43,28 +43,10 @@ function _buildCarousel(images) {
 
 function _initCarouselSwipe(el) {
     let startX = 0;
-    let startY = 0;
     let isDragging = false;
 
-    function onStart(x, y) {
-        startX = x;
-        startY = y;
-        isDragging = true;
-    }
-
-    function onEnd(x, y) {
-        if (!isDragging) return;
-        isDragging = false;
-        const dx = x - startX;
-        const dy = y - startY;
-        if (Math.abs(dx) < 30 || Math.abs(dx) < Math.abs(dy)) return;
-
+    function resetTimer() {
         if (_carouselTimer) { clearInterval(_carouselTimer); _carouselTimer = null; }
-        _carouselIdx = dx < 0
-            ? (_carouselIdx + 1) % _carouselCount
-            : (_carouselIdx - 1 + _carouselCount) % _carouselCount;
-        _goToSlide(_carouselIdx);
-
         _carouselTimer = setInterval(() => {
             _carouselIdx = (_carouselIdx + 1) % _carouselCount;
             _goToSlide(_carouselIdx);
@@ -72,13 +54,40 @@ function _initCarouselSwipe(el) {
     }
 
     // Touch
-    el.addEventListener('touchstart', e => onStart(e.touches[0].clientX, e.touches[0].clientY), { passive: true });
-    el.addEventListener('touchend',   e => onEnd(e.changedTouches[0].clientX, e.changedTouches[0].clientY), { passive: true });
+    el.addEventListener('touchstart', e => { startX = e.touches[0].clientX; }, { passive: true });
+    el.addEventListener('touchend', e => {
+        const dx = e.changedTouches[0].clientX - startX;
+        if (Math.abs(dx) < 30) return;
+        _carouselIdx = dx < 0
+            ? (_carouselIdx + 1) % _carouselCount
+            : (_carouselIdx - 1 + _carouselCount) % _carouselCount;
+        _goToSlide(_carouselIdx);
+        resetTimer();
+    }, { passive: true });
 
-    // Mouse
-    el.addEventListener('mousedown', e => { onStart(e.clientX, e.clientY); el.style.cursor = 'grabbing'; });
-    el.addEventListener('mouseup',   e => { onEnd(e.clientX, e.clientY);   el.style.cursor = 'grab'; });
-    el.addEventListener('mouseleave',e => { isDragging = false;             el.style.cursor = 'grab'; });
+    // Mouse — listen on document so mouseup fires even outside the element
+    el.addEventListener('mousedown', e => {
+        startX = e.clientX;
+        isDragging = true;
+        el.style.cursor = 'grabbing';
+        e.preventDefault();
+    });
+
+    document.addEventListener('mouseup', e => {
+        if (!isDragging) return;
+        isDragging = false;
+        el.style.cursor = 'grab';
+        const dx = e.clientX - startX;
+        if (Math.abs(dx) < 30) return;
+        _carouselIdx = dx < 0
+            ? (_carouselIdx + 1) % _carouselCount
+            : (_carouselIdx - 1 + _carouselCount) % _carouselCount;
+        _goToSlide(_carouselIdx);
+        resetTimer();
+    });
+
+    // Prevent native image drag interfering
+    el.querySelectorAll('img').forEach(img => img.addEventListener('dragstart', e => e.preventDefault()));
     el.style.cursor = 'grab';
 }
 
