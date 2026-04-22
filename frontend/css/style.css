@@ -699,7 +699,7 @@ select {
     max-width: 580px;
     border-radius: var(--radius-lg) var(--radius-lg) 0 0;
     animation: slideInBottom 0.3s cubic-bezier(.4, 0, .2, 1);
-    max-height: 80vh;
+    max-height: 85vh;
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -709,7 +709,7 @@ select {
     .modal-sheet {
         border-radius: var(--radius-lg);
         animation: slideUp 0.3s cubic-bezier(.4, 0, .2, 1);
-        max-height: 80vh;
+        max-height: 85vh;
     }
 }
 
