@@ -91,7 +91,9 @@ window.showAdminShopsView = (categoryId, categoryName) => {
     document.getElementById('adminShopsTitle').textContent = categoryName || t('shops');
     
     const tbody = document.getElementById('adminTableBody');
-    const filteredShops = _adminShops.filter(s => s.CategoryId === categoryId);
+    const filteredShops = _adminShops
+        .filter(s => s.CategoryId === categoryId)
+        .sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }));
 
     if (filteredShops.length === 0) {
         tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--text3);padding:40px">${t('noShopsInCat')}</td></tr>`;
