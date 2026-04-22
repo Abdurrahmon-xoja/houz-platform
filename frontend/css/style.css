@@ -717,14 +717,14 @@ select {
     flex-shrink: 0;
     display: flex;
     justify-content: flex-end;
-    padding: 16px 16px 0;
+    padding: 10px 12px 0;
     background: var(--bg);
 }
 
 .modal-body {
     flex: 1;
     overflow-y: auto;
-    padding: 0 32px 40px;
+    padding: 0 20px 24px;
     -webkit-overflow-scrolling: touch;
 }
 
@@ -775,8 +775,8 @@ select {
 .modal-content-grid {
     display: flex;
     flex-direction: column;
-    gap: 24px;
-    margin-bottom: 24px;
+    gap: 12px;
+    margin-bottom: 12px;
 }
 
 @media (min-width: 600px) {
@@ -793,7 +793,7 @@ select {
     flex-direction: column;
     align-items: center;
     text-align: center;
-    padding-top: 16px;
+    padding-top: 4px;
 }
 
 .modal-logo {
@@ -806,7 +806,7 @@ select {
     justify-content: center;
     overflow: hidden;
     flex-shrink: 0;
-    margin-bottom: 16px;
+    margin-bottom: 8px;
     border: 1px solid var(--border2);
 }
 
@@ -827,7 +827,7 @@ select {
     font-size: 13px;
     color: var(--text2);
     line-height: 1.4;
-    margin-bottom: 16px;
+    margin-bottom: 8px;
     max-width: 280px;
 }
 
