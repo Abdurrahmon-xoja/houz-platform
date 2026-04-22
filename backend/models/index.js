@@ -73,6 +73,7 @@ module.exports = {
     sequelize,
     User,
     Shop,
+    ShopImage,
     Category,
     SubCategory,
     Product,
