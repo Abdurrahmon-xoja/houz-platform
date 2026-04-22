@@ -55,8 +55,6 @@ window._handleGalleryUpload = async (file) => {
     showToast('Ошибка загрузки: ' + err.message, 'error');
   } finally {
     if (addBtn) addBtn.style.opacity = '';
-    const input = document.getElementById('galleryFileInput');
-    if (input) input.value = '';
   }
 };
 
@@ -174,7 +172,14 @@ function openShopForm(shop = null) {
   _renderGalleryImages();
   const galleryInput = document.getElementById('galleryFileInput');
   if (galleryInput) {
-    galleryInput.onchange = e => { if (e.target.files[0]) window._handleGalleryUpload(e.target.files[0]); };
+    galleryInput.onchange = async e => {
+      const files = Array.from(e.target.files);
+      for (const file of files) {
+        if (_galleryImages.length >= 3) { showToast('Максимум 3 фото', 'error'); break; }
+        await window._handleGalleryUpload(file);
+      }
+      e.target.value = '';
+    };
   }
 
   title.textContent = shop ? t('editShopTitle') : t('addShopTitle');
