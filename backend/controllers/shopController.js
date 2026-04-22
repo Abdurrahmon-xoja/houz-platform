@@ -1,6 +1,7 @@
 const { Shop, ShopImage, SubCategory, Category } = require('../models');
 const { Op } = require('sequelize');
 const cloudinary = require('cloudinary').v2;
+const sharp = require('sharp');
 
 cloudinary.config({
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -108,18 +109,20 @@ exports.addShopImage = async (req, res) => {
 
         if (!req.file) return res.status(400).json({ success: false, message: 'No file uploaded' });
 
+        const processedBuffer = await sharp(req.file.buffer)
+            .resize(1000, 1000, { fit: 'cover', position: 'centre' })
+            .jpeg({ quality: 85 })
+            .toBuffer();
+
         const uploadStream = cloudinary.uploader.upload_stream(
-            {
-                folder: 'houz_shops_gallery',
-                transformation: [{ quality: 'auto', fetch_format: 'auto', width: 1000, crop: 'limit' }]
-            },
+            { folder: 'houz_shops_gallery' },
             async (error, result) => {
                 if (error) return res.status(500).json({ success: false, message: error.message });
                 const image = await ShopImage.create({ url: result.secure_url, order: count, ShopId: req.params.id });
                 res.json({ success: true, data: image });
             }
         );
-        uploadStream.end(req.file.buffer);
+        uploadStream.end(processedBuffer);
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });
     }
