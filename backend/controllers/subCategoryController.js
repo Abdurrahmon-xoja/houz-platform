@@ -24,6 +24,17 @@ exports.createSubCategory = async (req, res) => {
     }
 };
 
+exports.updateSubCategory = async (req, res) => {
+    try {
+        const subCat = await SubCategory.findByPk(req.params.id);
+        if (!subCat) return res.status(404).json({ success: false, message: 'SubCategory not found' });
+        await subCat.update(req.body);
+        res.json({ success: true, data: subCat });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+};
+
 exports.deleteSubCategory = async (req, res) => {
     try {
         const subCat = await SubCategory.findByPk(req.params.id);

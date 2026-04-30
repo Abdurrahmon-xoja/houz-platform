@@ -36,7 +36,10 @@ window.renderAdminFilters = () => {
                     <span style="font-size: 11px; color: var(--text3)">ID: ${sc.id} • Slug: ${escHtml(sc.slug)}</span>
                 </div>
             </div>
-            <button class="btn-delete" onclick="deleteFilter(${sc.id}, '${escHtml(sc.name)}')">${t('delete')}</button>
+            <div style="display:flex;gap:8px">
+                <button class="btn-edit" onclick="editFilter(${sc.id})" style="font-size:13px;padding:6px 12px">${t('edit')}</button>
+                <button class="btn-delete" onclick="deleteFilter(${sc.id}, '${escHtml(sc.name)}')">${t('delete')}</button>
+            </div>
         </div>
     `).join('');
 };
@@ -75,6 +78,37 @@ window.addFilterPrompt = async () => {
         renderAdminFilters();
     } catch (e) {
         showToast(t('addFilterError'), 'error');
+    }
+};
+
+window.editFilter = async (id) => {
+    const sc = window._adminSubCategories.find(s => s.id === id);
+    if (!sc) return;
+
+    const newName = prompt("Nomi (UZ):", sc.name);
+    if (newName === null) return;
+
+    const newNameRu = prompt("Русское название (RU):", sc.name_ru || '');
+    if (newNameRu === null) return;
+
+    try {
+        const res = await fetch(`${API}/api/subcategories/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem(TOKEN_KEY)}`
+            },
+            body: JSON.stringify({ name: newName.trim(), name_ru: newNameRu.trim() || null })
+        });
+        if (handle401(res)) return;
+        if (!res.ok) throw new Error();
+        const updated = (await res.json()).data;
+        const idx = window._adminSubCategories.findIndex(s => s.id === id);
+        if (idx !== -1) window._adminSubCategories[idx] = updated;
+        showToast('✅ Saqlandi', 'success');
+        renderAdminFilters();
+    } catch {
+        showToast(t('saveFailed'), 'error');
     }
 };
 
