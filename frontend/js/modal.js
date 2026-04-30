@@ -113,7 +113,7 @@ function openShopModal(shopId) {
     // Info Column
     document.getElementById('modalName').textContent = shop.name;
 
-    const desc = getLocalizedText(shop, 'description_ru', 'description');
+    const desc = currentLang === 'ru' ? shop.description_ru : shop.description;
     document.getElementById('modalDescFull').textContent = desc || t('descPlaceholder');
 
     document.getElementById('modalLocText').textContent = shop.location || t('locPlaceholder');

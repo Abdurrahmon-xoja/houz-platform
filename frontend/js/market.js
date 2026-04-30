@@ -204,7 +204,7 @@ function renderShops(shops) {
 
       <div class="market-info">
         <div class="market-name">${escHtml(shop.name)}</div>
-        <div class="market-desc">${escHtml(shop.description || 'Klassik va zamonaviy uslubdagi sifatli mebellar...')}</div>
+        <div class="market-desc">${escHtml((currentLang === 'ru' ? shop.description_ru : shop.description) || '')}</div>
       </div>
 
       <div class="market-chevron">
