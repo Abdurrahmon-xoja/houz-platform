@@ -152,66 +152,6 @@ app.get('/api/run-migration', async (req, res) => {
     }
 });
 
-app.get('/api/debug-subcats', async (req, res) => {
-    try {
-        const { SubCategory, Category } = require('./models');
-        const cats = await Category.findAll({ order: [['id', 'ASC']] });
-        const subs = await SubCategory.findAll({ order: [['CategoryId', 'ASC'], ['id', 'ASC']] });
-        const catMap = {};
-        cats.forEach(c => { catMap[c.id] = c.slug; });
-        const result = {};
-        for (const sc of subs) {
-            const key = catMap[sc.CategoryId] || String(sc.CategoryId);
-            if (!result[key]) result[key] = [];
-            result[key].push({ id: sc.id, name: sc.name, name_ru: sc.name_ru, slug: sc.slug });
-        }
-        res.json(result);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-app.get('/api/fix-duplicates', async (req, res) => {
-    try {
-        const { SubCategory } = require('./models');
-
-        // Targeted fix based on exact production DB state:
-        // OLD entries (lower ids) have name_ru=null → update them with correct name_ru
-        // NEW entries (higher ids) are duplicates → delete them
-        const updates = [
-            { id: 28, name_ru: 'Искусственные растения' },
-            { id: 34, name_ru: 'Текстиль' },
-            { id: 6,  name_ru: 'Краска' },
-            { id: 13, name_ru: 'Обои' },
-            { id: 36, name_ru: 'Дерево' },
-            { id: 29, name_ru: 'Искусственный камень' },
-        ];
-        const deleteIds = [54, 45, 46, 47, 48, 49, 50, 51, 52, 53];
-
-        const updated = [];
-        for (const { id, name_ru } of updates) {
-            const sc = await SubCategory.findByPk(id);
-            if (sc) { await sc.update({ name_ru }); updated.push(id); }
-        }
-
-        const deleted = [];
-        for (const id of deleteIds) {
-            const sc = await SubCategory.findByPk(id);
-            if (sc) { await sc.destroy(); deleted.push(id); }
-        }
-
-        res.json({
-            success: true,
-            version: 'targeted-v2',
-            updated,
-            deleted,
-            message: `Updated ${updated.length} entries, deleted ${deleted.length} duplicates.`
-        });
-    } catch (err) {
-        res.status(500).json({ success: false, error: err.message });
-    }
-});
-
 app.use('/api', authRoutes);
 app.use('/api/shops', shopRoutes);
 app.use('/api/categories', categoryRoutes);
