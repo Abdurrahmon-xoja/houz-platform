@@ -152,6 +152,26 @@ app.get('/api/run-migration', async (req, res) => {
     }
 });
 
+app.get('/api/fix-duplicates', async (req, res) => {
+    try {
+        const { SubCategory } = require('./models');
+        const duplicateSlugs = [
+            'bog-mebeli', 'toqimachilik', 'boyoqlar', 'gulqogozlar',
+            'yogochli-qoplamalar', 'suniy-tosh', 'tom-va-suv-oqizgichlar',
+            'basseynlar-va-suv-zonalari', 'panjara-va-avtomatik-darvozalar',
+            'fasad-arxitektura-yoritishi', 'suniy-osimliklar'
+        ];
+        let deleted = 0;
+        for (const slug of duplicateSlugs) {
+            const row = await SubCategory.findOne({ where: { slug } });
+            if (row) { await row.destroy(); deleted++; }
+        }
+        res.json({ success: true, deleted, message: `Removed ${deleted} duplicate subcategories.` });
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
 app.use('/api', authRoutes);
 app.use('/api/shops', shopRoutes);
 app.use('/api/categories', categoryRoutes);
