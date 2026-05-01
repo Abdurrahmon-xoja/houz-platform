@@ -15,26 +15,53 @@ const shopIncludes = [
     { model: ShopImage, attributes: ['id', 'url', 'order'] }
 ];
 
+// Simple in-memory cache for shop list queries
+const _cache = new Map();
+const CACHE_TTL = 60_000; // 60 seconds
+function cacheGet(key) {
+    const entry = _cache.get(key);
+    if (!entry || Date.now() - entry.ts > CACHE_TTL) return null;
+    return entry.data;
+}
+function cacheSet(key, data) { _cache.set(key, { data, ts: Date.now() }); }
+function cacheClear() { _cache.clear(); }
+
 exports.getAllShops = async (req, res) => {
     try {
-        const { category, search } = req.query;
+        const { category, subcategory, search } = req.query;
+        const cacheKey = `${category}|${subcategory}|${search}`;
+        const cached = cacheGet(cacheKey);
+        if (cached) return res.json(cached);
+
         let whereClause = { isActive: true };
+        if (search) whereClause.name = { [Op.iLike]: `%${search}%` };
+        if (category) whereClause.CategoryId = category;
 
-        if (search) {
-            whereClause.name = { [Op.iLike]: `%${search}%` };
+        // Filter by subcategory at DB level — avoids sending all shops to the client
+        const subCatInclude = { model: SubCategory, through: { attributes: [] } };
+        if (subcategory) {
+            subCatInclude.where = { id: subcategory };
+            subCatInclude.required = true;
         }
-        if (category) {
-            whereClause.CategoryId = category;
-        }
 
-        const shops = await Shop.findAll({ where: whereClause, include: shopIncludes });
+        const shops = await Shop.findAll({
+            where: whereClause,
+            include: [
+                subCatInclude,
+                { model: Category, attributes: ['id', 'name', 'slug', 'icon'] },
+                { model: ShopImage, attributes: ['id', 'url', 'order'] },
+            ],
+        });
 
+        // Shuffle on server so clients don't need to
         for (let i = shops.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
             [shops[i], shops[j]] = [shops[j], shops[i]];
         }
 
-        res.json({ success: true, data: shops });
+        const result = { success: true, data: shops };
+        if (!search) cacheSet(cacheKey, result); // don't cache search results
+        res.json(result);
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });
     }
@@ -59,6 +86,7 @@ exports.createShop = async (req, res) => {
             await shop.setSubCategories(subCats);
         }
 
+        cacheClear();
         const updatedShop = await Shop.findByPk(shop.id, { include: shopIncludes });
         res.json({ success: true, data: updatedShop });
     } catch (err) {
@@ -78,6 +106,7 @@ exports.updateShop = async (req, res) => {
             await shop.setSubCategories(subCats);
         }
 
+        cacheClear();
         const updatedShop = await Shop.findByPk(shop.id, { include: shopIncludes });
         res.json({ success: true, data: updatedShop });
     } catch (err) {
@@ -91,6 +120,7 @@ exports.deleteShop = async (req, res) => {
         if (!shop) return res.status(404).json({ success: false, message: 'Shop not found' });
 
         await shop.destroy();
+        cacheClear();
         res.json({ success: true, message: 'Shop deleted' });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });

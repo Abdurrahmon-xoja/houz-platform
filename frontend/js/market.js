@@ -138,17 +138,7 @@ async function fetchAndRenderShops(activeMainIdOrSlug = 'all', activeSubIdOrSlug
       _allShops = [];
   }
 
-  // Frontend manual filter since backend filtering of Many-to-Many is tricky in basic query
-  // Ensures subcategory accurate filtering
-  let displayShops = _allShops;
-  if (activeSubIdOrSlug && activeSubIdOrSlug !== 'all') {
-      displayShops = displayShops.filter(s => {
-          if (!s.SubCategories) return false;
-          return s.SubCategories.some(sc => String(sc.id) === String(activeSubIdOrSlug));
-      });
-  }
-
-  renderShops(displayShops);
+  renderShops(_allShops);
 
   const urlParams = new URLSearchParams(window.location.search);
   const shopIdParam = urlParams.get('shop');
