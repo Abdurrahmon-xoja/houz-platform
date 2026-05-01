@@ -173,59 +173,38 @@ app.get('/api/debug-subcats', async (req, res) => {
 
 app.get('/api/fix-duplicates', async (req, res) => {
     try {
-        const { SubCategory, Category } = require('./models');
-        const all = await SubCategory.findAll({ order: [['CategoryId', 'ASC'], ['id', 'ASC']] });
-        const cats = await Category.findAll();
-        const catMap = {};
-        cats.forEach(c => { catMap[c.id] = c.slug; });
+        const { SubCategory } = require('./models');
 
-        // Diagnostic: show every subcategory grouped by category
-        const before = {};
-        for (const sc of all) {
-            const key = catMap[sc.CategoryId] || sc.CategoryId;
-            if (!before[key]) before[key] = [];
-            before[key].push({ id: sc.id, name: sc.name, name_ru: sc.name_ru, slug: sc.slug });
+        // Targeted fix based on exact production DB state:
+        // OLD entries (lower ids) have name_ru=null → update them with correct name_ru
+        // NEW entries (higher ids) are duplicates → delete them
+        const updates = [
+            { id: 28, name_ru: 'Искусственные растения' },
+            { id: 34, name_ru: 'Текстиль' },
+            { id: 6,  name_ru: 'Краска' },
+            { id: 13, name_ru: 'Обои' },
+            { id: 36, name_ru: 'Дерево' },
+            { id: 29, name_ru: 'Искусственный камень' },
+        ];
+        const deleteIds = [54, 45, 46, 47, 48, 49, 50, 51, 52, 53];
+
+        const updated = [];
+        for (const { id, name_ru } of updates) {
+            const sc = await SubCategory.findByPk(id);
+            if (sc) { await sc.update({ name_ru }); updated.push(id); }
         }
 
-        // Deduplicate: group by CategoryId + name (Uzbek), keep the one with name_ru set
-        const seenByName = {};
-        const toDelete = [];
-        for (const sc of all) {
-            const key = `${sc.CategoryId}__${(sc.name || '').trim().toLowerCase()}`;
-            if (seenByName[key]) {
-                const existing = seenByName[key];
-                // Replace existing with current if current has name_ru and existing doesn't
-                if (!existing.name_ru && sc.name_ru) {
-                    toDelete.push(existing);
-                    seenByName[key] = sc;
-                } else {
-                    toDelete.push(sc);
-                }
-            } else {
-                seenByName[key] = sc;
-            }
+        const deleted = [];
+        for (const id of deleteIds) {
+            const sc = await SubCategory.findByPk(id);
+            if (sc) { await sc.destroy(); deleted.push(id); }
         }
-
-        // Also deduplicate by CategoryId + name_ru (catches Russian-text-in-name-field case)
-        const seenByNameRu = {};
-        const remaining = all.filter(sc => !toDelete.find(d => d.id === sc.id));
-        for (const sc of remaining) {
-            if (!sc.name_ru) continue;
-            const key = `${sc.CategoryId}__${sc.name_ru.trim().toLowerCase()}`;
-            if (seenByNameRu[key]) {
-                toDelete.push(sc);
-            } else {
-                seenByNameRu[key] = sc;
-            }
-        }
-
-        for (const sc of toDelete) await sc.destroy();
 
         res.json({
             success: true,
-            deleted: toDelete.length,
-            removedSlugs: toDelete.map(s => `${s.slug} (id:${s.id})`),
-            before,
+            updated,
+            deleted,
+            message: `Updated ${updated.length} entries, deleted ${deleted.length} duplicates.`
         });
     } catch (err) {
         res.status(500).json({ success: false, error: err.message });
