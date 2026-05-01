@@ -155,18 +155,28 @@ app.get('/api/run-migration', async (req, res) => {
 app.get('/api/fix-duplicates', async (req, res) => {
     try {
         const { SubCategory } = require('./models');
-        const duplicateSlugs = [
-            'bog-mebeli', 'toqimachilik', 'boyoqlar', 'gulqogozlar',
-            'yogochli-qoplamalar', 'suniy-tosh', 'tom-va-suv-oqizgichlar',
-            'basseynlar-va-suv-zonalari', 'panjara-va-avtomatik-darvozalar',
-            'fasad-arxitektura-yoritishi', 'suniy-osimliklar'
-        ];
-        let deleted = 0;
-        for (const slug of duplicateSlugs) {
-            const row = await SubCategory.findOne({ where: { slug } });
-            if (row) { await row.destroy(); deleted++; }
+        const all = await SubCategory.findAll({ order: [['id', 'ASC']] });
+
+        // Group by CategoryId + name_ru (or name if name_ru missing)
+        const seen = {};
+        const toDelete = [];
+        for (const sc of all) {
+            const key = `${sc.CategoryId}__${(sc.name_ru || sc.name || '').trim().toLowerCase()}`;
+            if (seen[key]) {
+                toDelete.push(sc); // duplicate — keep the first (lowest id)
+            } else {
+                seen[key] = sc;
+            }
         }
-        res.json({ success: true, deleted, message: `Removed ${deleted} duplicate subcategories.` });
+
+        for (const sc of toDelete) await sc.destroy();
+
+        res.json({
+            success: true,
+            deleted: toDelete.length,
+            removedSlugs: toDelete.map(s => s.slug),
+            message: `Removed ${toDelete.length} duplicate subcategories.`
+        });
     } catch (err) {
         res.status(500).json({ success: false, error: err.message });
     }
