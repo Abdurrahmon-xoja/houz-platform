@@ -202,6 +202,7 @@ app.get('/api/fix-duplicates', async (req, res) => {
 
         res.json({
             success: true,
+            version: 'targeted-v2',
             updated,
             deleted,
             message: `Updated ${updated.length} entries, deleted ${deleted.length} duplicates.`
