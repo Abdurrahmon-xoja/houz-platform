@@ -271,10 +271,14 @@ function enableDragScroll(el) {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
-    // Need to pre-fetch categories globally so market tabs can match name to ID correctly
+    // Fetch categories + subcategories in parallel to reduce load time
     try {
-        const catsRes = await fetch(`${API}/api/categories`);
+        const [catsRes, subsRes] = await Promise.all([
+            fetch(`${API}/api/categories`),
+            fetch(`${API}/api/subcategories`),
+        ]);
         window._adminCategories = (await catsRes.json()).data || [];
+        _liveSubCategories = (await subsRes.json()).data || [];
     } catch(e) {}
 
     const path = window.location.pathname;

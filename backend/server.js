@@ -1,5 +1,6 @@
 require('dotenv').config();
 const express = require('express');
+const compression = require('compression');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const path = require('path');
@@ -16,10 +17,14 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middleware
+app.use(compression());
 app.use(cors());
 // Increase body parser limits for large Base64 payloads
 app.use(bodyParser.json({ limit: '10mb' }));
 app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
+
+// Cache the shops.html file in memory to avoid repeated disk reads
+let _shopsHtml = null;
 
 // SSR Open Graph Interceptor for Telegram/WhatsApp previews
 app.get('/shops.html', async (req, res, next) => {
@@ -32,7 +37,8 @@ app.get('/shops.html', async (req, res, next) => {
 
         if (!shop) return next();
 
-        let html = fs.readFileSync(path.join(__dirname, '../frontend/shops.html'), 'utf-8');
+        if (!_shopsHtml) _shopsHtml = fs.readFileSync(path.join(__dirname, '../frontend/shops.html'), 'utf-8');
+        let html = _shopsHtml;
         
         const catName = shop.Category ? (shop.Category.name_ru || shop.Category.name) : '';
         const titleStr = catName ? `${catName} - ${shop.name}` : shop.name;
@@ -69,7 +75,10 @@ app.get('/shops.html', async (req, res, next) => {
     }
 });
 
-app.use(express.static(path.join(__dirname, '../frontend'))); // Serve static files from 'frontend' directory
+app.use(express.static(path.join(__dirname, '../frontend'), {
+    maxAge: '7d',
+    etag: true,
+}));
 
 // Database Initialization
 initDb();
