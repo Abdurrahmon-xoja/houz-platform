@@ -152,6 +152,25 @@ app.get('/api/run-migration', async (req, res) => {
     }
 });
 
+app.get('/api/debug-subcats', async (req, res) => {
+    try {
+        const { SubCategory, Category } = require('./models');
+        const cats = await Category.findAll({ order: [['id', 'ASC']] });
+        const subs = await SubCategory.findAll({ order: [['CategoryId', 'ASC'], ['id', 'ASC']] });
+        const catMap = {};
+        cats.forEach(c => { catMap[c.id] = c.slug; });
+        const result = {};
+        for (const sc of subs) {
+            const key = catMap[sc.CategoryId] || String(sc.CategoryId);
+            if (!result[key]) result[key] = [];
+            result[key].push({ id: sc.id, name: sc.name, name_ru: sc.name_ru, slug: sc.slug });
+        }
+        res.json(result);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 app.get('/api/fix-duplicates', async (req, res) => {
     try {
         const { SubCategory, Category } = require('./models');
