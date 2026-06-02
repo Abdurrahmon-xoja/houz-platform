@@ -23,7 +23,7 @@ app.use(cors());
 app.use(bodyParser.json({ limit: '10mb' }));
 app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
 
-// Cache the shops.html file in memory to avoid repeated disk reads
+// Cache the shops.html file in memory — cleared on each deploy (process restart)
 let _shopsHtml = null;
 
 // SSR Open Graph Interceptor for Telegram/WhatsApp previews
@@ -76,8 +76,13 @@ app.get('/shops.html', async (req, res, next) => {
 });
 
 app.use(express.static(path.join(__dirname, '../frontend'), {
-    maxAge: '7d',
+    maxAge: '1d',
     etag: true,
+    setHeaders: (res, filePath) => {
+        if (filePath.endsWith('.html') || filePath.endsWith('.css') || filePath.endsWith('.js')) {
+            res.setHeader('Cache-Control', 'public, max-age=0, must-revalidate');
+        }
+    }
 }));
 
 // Database Initialization
