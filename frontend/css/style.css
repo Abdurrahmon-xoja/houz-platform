@@ -1718,6 +1718,8 @@ body {
     height: 32px;
     border-radius: 50%;
     transition: background 0.15s;
+    align-self: center;
+    flex-shrink: 0;
 }
 
 .back-btn:hover {
