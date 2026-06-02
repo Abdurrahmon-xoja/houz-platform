@@ -1724,6 +1724,14 @@ body {
     background: rgba(15, 169, 134, 0.12);
 }
 
+.header-divider {
+    color: #ccc;
+    font-weight: 300;
+    font-size: 20px;
+    line-height: 1;
+    user-select: none;
+}
+
 .home-logo {
     display: flex;
     align-items: center;
