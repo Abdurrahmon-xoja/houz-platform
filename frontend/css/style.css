@@ -1708,6 +1708,22 @@ body {
     padding: 20px 0;
 }
 
+.back-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #0FA986;
+    text-decoration: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    transition: background 0.15s;
+}
+
+.back-btn:hover {
+    background: rgba(15, 169, 134, 0.12);
+}
+
 .home-logo {
     display: flex;
     align-items: center;
